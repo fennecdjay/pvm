@@ -6,7 +6,7 @@
 #include <string.h>
 #include "utils.h"
 
-static void scanner_assert_remaining (Scanner* scanner, int remaining)
+static void scanner_assert_remaining (Scanner* scanner, uint8_t remaining)
 {
     if (scanner->length - scanner->index <= remaining)
     {
@@ -18,11 +18,11 @@ static void scanner_assert_remaining (Scanner* scanner, int remaining)
 Scanner* scanner_new (const char* input_name, int8_t* input,
                       uint32_t input_length)
 {
-    Scanner* scanner = malloc (sizeof (Scanner));
-    scanner->index = 0;
+    Scanner* scanner    = malloc (sizeof (Scanner));
+    scanner->index      = 0;
     scanner->input_name = input_name;
-    scanner->input = input;
-    scanner->length = input_length;
+    scanner->input      = input;
+    scanner->length     = input_length;
     return scanner;
 }
 

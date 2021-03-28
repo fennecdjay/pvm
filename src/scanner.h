@@ -15,7 +15,7 @@ struct _Scanner
 };
 
 Scanner* scanner_new (const char* input_name, int8_t* input,
-		      uint32_t input_length);
+                      uint32_t input_length);
 int8_t scanner_look_i8 (Scanner* scanner);
 int16_t scanner_look_i16 (Scanner* scanner);
 int32_t scanner_look_i32 (Scanner* scanner);

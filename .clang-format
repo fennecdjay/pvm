@@ -7,3 +7,5 @@ PointerAlignment: Left
 IndentWidth: 4
 SortIncludes: false
 SpaceAfterCStyleCast: true
+AlignConsecutiveAssignments: true
+AllowShortCaseLabelsOnASingleLine: true
