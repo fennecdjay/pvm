@@ -3,6 +3,8 @@ libpvm_sources = [
     'function.c',
     'instruction.c',
     'opcode.c',
+    'parser.c',
+    'pool.c',
     'scanner.c',
     'sourceloctable.c',
     'utils.c',
@@ -14,6 +16,8 @@ libpvm_inst_headers = [
     'function.h',
     'instruction.h',
     'opcode.h',
+    'parser.h',
+    'pool.h',
     'scanner.h',
     'sourceloctable.h',
 ]
@@ -23,12 +27,28 @@ libpvm_noinst_headers = [
 ]
 
 libpvm_headers = libpvm_noinst_headers + libpvm_inst_headers
+formatted_version = 'pvm-@0@'.format(meson.project_version())
+
 test_cc_args = [
     '-Wall',
+    '-Wextra',
     '-Werror',
     '-Wno-pedantic',
     '-Wno-unused-parameter',
+    '-Wno-switch',
+    '-Wno-unused-function',
 ]
+
+conf = configuration_data()
+conf.set('is_lil_endian_uwu', build_machine.endian() == 'little' ? 1 : 0)
+
+confh = configure_file(
+    input: 'config.h.in',
+    output: 'config.h',
+    configuration: conf,
+)
+
+libpvm_noinst_headers += [confh]
 
 cc = meson.get_compiler('c')
 global_cc_args = []
@@ -48,12 +68,12 @@ libpvm = shared_library(
 
 install_headers(
     libpvm_inst_headers,
-    subdir: 'pvm-@0@/pvm'.format(meson.project_version()),
+    subdir: formatted_version + '/pvm',
 )
 
 install_headers(
     'pvm.h',
-    subdir: 'pvm-@0@'.format(meson.project_version()),
+    subdir: formatted_version,
 )
 
 executable(
@@ -62,4 +82,12 @@ executable(
     c_args: global_cc_args,
     link_with: libpvm,
     install: true,
+)
+
+import('pkgconfig').generate(
+    libpvm,
+    description: 'The Pretzel Virtual Machine',
+    filebase: formatted_version,
+    subdirs: formatted_version,
+    version: meson.project_version(),
 )

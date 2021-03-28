@@ -6,6 +6,7 @@
 #include "pvm/function.h"
 #include "pvm/instruction.h"
 #include "pvm/opcode.h"
+#include "pvm/parser.h"
 #include "pvm/scanner.h"
 #include "pvm/sourceloctable.h"
 

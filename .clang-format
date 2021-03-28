@@ -9,3 +9,4 @@ SortIncludes: false
 SpaceAfterCStyleCast: true
 AlignConsecutiveAssignments: true
 AllowShortCaseLabelsOnASingleLine: true
+AlignConsecutiveMacros: true

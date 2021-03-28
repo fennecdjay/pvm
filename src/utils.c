@@ -4,8 +4,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <limits.h>
-#include "config.h"
 
 #define insane_free(ptr) \
     {                    \
@@ -88,4 +88,55 @@ char *ubyte_array_to_string (uint8_t *arr, uint32_t len)
     }
 
     return result;
+}
+
+uint16_t swap_u16 (uint16_t val)
+{
+    return (val << 8) | (val >> 8);
+}
+
+int16_t swap_i16 (int16_t val)
+{
+    return (val << 8) | ((val >> 8) & 0xFF);
+}
+
+uint32_t swap_u32 (uint32_t val)
+{
+    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
+    return (val << 16) | (val >> 16);
+}
+
+int32_t swap_i32 (int32_t val)
+{
+    val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
+    return (val << 16) | ((val >> 16) & 0xFFFF);
+}
+
+int64_t swap_i64 (int64_t val)
+{
+    val = ((val << 8) & 0xFF00FF00FF00FF00ULL) |
+          ((val >> 8) & 0x00FF00FF00FF00FFULL);
+    val = ((val << 16) & 0xFFFF0000FFFF0000ULL) |
+          ((val >> 16) & 0x0000FFFF0000FFFFULL);
+    return (val << 32) | ((val >> 32) & 0xFFFFFFFFULL);
+}
+
+uint64_t swap_u64 (uint64_t val)
+{
+    val = ((val << 8) & 0xFF00FF00FF00FF00ULL) |
+          ((val >> 8) & 0x00FF00FF00FF00FFULL);
+    val = ((val << 16) & 0xFFFF0000FFFF0000ULL) |
+          ((val >> 16) & 0x0000FFFF0000FFFFULL);
+    return (val << 32) | (val >> 32);
+}
+
+bool is_little_endian ()
+{
+    union
+    {
+        uint32_t i;
+        char c[4];
+    } e = {0x01000000};
+
+    return !(e.c[0]);
 }

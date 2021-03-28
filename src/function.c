@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "instruction.h"
 #include "sourceloctable.h"
+#include "utils.h"
 
 Function* function_new (Instruction** instructions, uint32_t instructions_len,
                         uint32_t name_ref, uint32_t sig_ref, uint32_t arity,
@@ -33,6 +34,7 @@ void function_disassemble (Function* func, FILE* out)
 
 void function_free (Function* function)
 {
+    return_if_null (function);
     for (uint32_t i = 0; i < function->instructions_len; i++)
     {
         instruction_free (function->instructions[i]);
