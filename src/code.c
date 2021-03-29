@@ -26,5 +26,33 @@ void code_free (Code* code)
 
     free (code->functions);
     pool_free (code->pool);
+    header_free (code->header);
     free (code);
+}
+
+Header* header_new (int major, int minor, int patch, char* sourcename,
+                    char* vendor)
+{
+    Header* h     = malloc (sizeof (Header));
+    h->major      = major;
+    h->minor      = minor;
+    h->patch      = patch;
+    h->sourcename = sourcename;
+    h->vendor     = vendor == NULL ? "<none>" : vendor;
+    return h;
+}
+
+const char* header_to_string (Header* header)
+{
+    char* c;
+    asprintf (&c,
+              "Header[maj=0x%02X min=0x%02X patch=0x%02X srcname=%s vendor=%s]",
+              header->major, header->minor, header->patch, header->sourcename,
+              header->vendor);
+    return c;
+}
+
+void header_free (Header* header)
+{
+    free (header);
 }

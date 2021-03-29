@@ -64,25 +64,28 @@ PoolEntry* pool_entry_new_utf8 (char* str, uint64_t len)
     return entry;
 }
 
-const char* pool_entry_to_string(PoolEntry *entry)
+const char* pool_entry_to_string (PoolEntry* entry)
 {
     char* begin;
-    asprintf(&begin, "Entry[type=%d ", entry->type);
+    asprintf (&begin, "Entry[type=%d ", entry->type);
     char* end;
-    switch (entry->type) {
-        case PVM_POOL_ENTRY_TYPE_UTF8: {
-            asprintf(&end, "value=%s]", entry->value.str);
+    switch (entry->type)
+    {
+        case PVM_POOL_ENTRY_TYPE_UTF8:
+        {
+            asprintf (&end, "value=%s]", entry->value.str);
             break;
         }
 
-        case PVM_POOL_ENTRY_TYPE_LONG: {
-            asprintf(&end, "value=%lX]", entry->value.l);
+        case PVM_POOL_ENTRY_TYPE_LONG:
+        {
+            asprintf (&end, "value=%lX]", entry->value.l);
             break;
         }
     }
 
     char* result;
-    asprintf(&result, "%s%s", begin, end);
+    asprintf (&result, "%s%s", begin, end);
     return result;
 }
 

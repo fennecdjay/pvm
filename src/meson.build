@@ -84,7 +84,9 @@ executable(
     install: true,
 )
 
-import('pkgconfig').generate(
+pkgc = import('pkgconfig')
+
+pkgc.generate(
     libpvm,
     description: 'The Pretzel Virtual Machine',
     filebase: formatted_version,

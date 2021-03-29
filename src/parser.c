@@ -1,5 +1,6 @@
 // parser.c: parser implementation as defined by parser.h
 // license information in LICENSE
+#include "code.h"
 #include "scanner.h"
 #include "utils.h"
 #include "parser.h"
@@ -13,7 +14,10 @@
 
 static int8_t *read_file (const char *fname, uint64_t *flen);
 static Pool *build_pool (Parser *parser);
+static Header *build_header (Parser *parser);
+static char *read_n_bytes (Parser *parser, uint64_t n);
 static inline bool is_next_i8 (Parser *parser, int8_t u);
+static inline bool is_next_u8 (Parser *parser, uint8_t u);
 static inline int8_t read_i8 (Parser *parser);
 static inline int16_t read_i16 (Parser *parser);
 static inline int32_t read_i32 (Parser *parser);
@@ -35,6 +39,7 @@ Parser *parser_new (const char *input_filename)
 
 Code *parser_parse (Parser *parser)
 {
+    build_header (parser);
     build_pool (parser);
     return NULL;
 }
@@ -89,7 +94,7 @@ static Pool *build_pool (Parser *parser)
 
         if (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF8)
         {
-            int bufsize = sizeof (char) * len + 1;
+            int bufsize  = sizeof (char) * len + 1;
             char *buffer = malloc (bufsize);
             for (uint32_t i = 0; i < len; i++)
             {
@@ -97,7 +102,7 @@ static Pool *build_pool (Parser *parser)
             }
 
             buffer[bufsize - 1] = 0;
-            e = pool_entry_new_utf8 (buffer, len);
+            e                   = pool_entry_new_utf8 (buffer, len);
         }
         else
         {
@@ -111,15 +116,54 @@ static Pool *build_pool (Parser *parser)
         }
 
         pool_add_entry (pool, e);
-        printf ("%s\n", pool_entry_to_string(e));
+        printf ("%s\n", pool_entry_to_string (e));
     }
 
     return pool;
 }
 
+static Header *build_header (Parser *parser)
+{
+    // Get the version
+    uint8_t major = read_u8 (parser);
+    uint8_t minor = read_u8 (parser);
+    uint8_t patch = read_u8 (parser);
+
+    uint8_t srcname_len = read_u8 (parser);
+    char *srcname       = read_n_bytes (parser, srcname_len);
+    bool hasvendor      = !is_next_u8 (parser, PVM_PARSER_POOL_START);
+    char *vendor        = NULL;
+    if (hasvendor)
+    {
+        uint16_t vendor_len = read_u16 (parser);
+        vendor              = read_n_bytes (parser, vendor_len);
+    }
+
+    Header* header = header_new (major, minor, patch, srcname, vendor);
+    printf ("%s\n", header_to_string (header));
+    return header;
+}
+
+static char *read_n_bytes (Parser *parser, uint64_t n)
+{
+    char *s = malloc (sizeof (char) * (n + 1));
+    for (uint64_t i = 0; i < n; i++)
+    {
+        s[i] = read_u8 (parser);
+    }
+
+    s[sizeof (char) * n] = 0;
+    return s;
+}
+
 static inline bool is_next_i8 (Parser *parser, int8_t u)
 {
     return scanner_look_i8 (parser->scanner) == u;
+}
+
+static inline bool is_next_u8 (Parser *parser, uint8_t u)
+{
+    return scanner_look_u8 (parser->scanner) == u;
 }
 
 static inline int8_t read_i8 (Parser *parser)
