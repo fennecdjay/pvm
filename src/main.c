@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser.h"
-#include "code.h"
-#include "utf8.h"
+#include "pbcfile/parser.h"
+#include "ir/code.h"
+#include "encoding/utf8.h"
 
 int main (int argc, char** argv)
 {

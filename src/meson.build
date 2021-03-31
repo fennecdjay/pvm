@@ -1,32 +1,71 @@
-libpvm_sources = [
-    'code.c',
-    'function.c',
-    'instruction.c',
-    'opcode.c',
-    'parser.c',
-    'pool.c',
-    'scanner.c',
-    'sourceloctable.c',
-    'utils.c',
-    'utf8.c',
+subdirs = [
+    'encoding',
+    'ir',
+    'pbcfile',
+    'utils',
 ]
 
-libpvm_inst_headers = [
-    'code.h',
-    'common.h',
-    'function.h',
-    'instruction.h',
-    'opcode.h',
-    'parser.h',
-    'pool.h',
-    'scanner.h',
-    'sourceloctable.h',
-    'utf8.h',
-]
+foreach subdir: subdirs
+    subdir(subdir)
+endforeach
 
-libpvm_noinst_headers = [
-    'utils.h',
-]
+# Awful but it works
+
+libpvm_sources = []
+
+foreach src: utils_sources
+    libpvm_sources += 'utils' / src
+endforeach
+
+foreach src: ir_sources
+    libpvm_sources += 'ir' / src
+endforeach
+
+foreach src: pbcfile_sources
+    libpvm_sources += 'pbcfile' / src
+endforeach
+
+foreach src: encoding_sources
+    libpvm_sources += 'encoding' / src
+endforeach
+
+
+libpvm_inst_headers = []
+
+foreach header: utils_inst_headers
+    libpvm_inst_headers += 'utils' / header
+endforeach
+
+foreach header: ir_inst_headers
+    libpvm_inst_headers += 'ir' / header
+endforeach
+
+foreach header: pbcfile_inst_headers
+    libpvm_inst_headers += 'pbcfile' / header
+endforeach
+
+foreach header: encoding_inst_headers
+    libpvm_inst_headers += 'encoding' / header
+endforeach
+
+
+libpvm_noinst_headers = []
+
+foreach header: utils_noinst_headers
+    libpvm_noinst_headers += 'utils' / header
+endforeach
+
+foreach header: ir_noinst_headers
+    libpvm_noinst_headers += 'ir' / header
+endforeach
+
+foreach header: pbcfile_noinst_headers
+    libpvm_noinst_headers += 'pbcfile' / header
+endforeach
+
+foreach header: encoding_noinst_headers
+    libpvm_noinst_headers += 'encoding' / header
+endforeach
 
 libpvm_deps = [
     dependency('icu-uc'),
@@ -55,6 +94,11 @@ confh = configure_file(
     configuration: conf,
 )
 
+include_dirs = []
+foreach subdir: subdirs
+    include_dirs += include_directories(subdir)
+endforeach
+
 libpvm_noinst_headers += [confh]
 
 cc = meson.get_compiler('c')
@@ -71,6 +115,7 @@ libpvm = shared_library(
     sources: libpvm_sources + libpvm_headers,
     c_args: global_cc_args,
     dependencies: libpvm_deps,
+    include_directories: include_dirs,
     install: true,
 )
 

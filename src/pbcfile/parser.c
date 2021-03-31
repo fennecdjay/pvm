@@ -1,6 +1,6 @@
 // parser.c: parser implementation as defined by parser.h
 // license information in LICENSE
-#include "code.h"
+#include "ir/code.h"
 #include "scanner.h"
 #include "utils.h"
 #include "parser.h"
