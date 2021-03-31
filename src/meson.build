@@ -8,6 +8,7 @@ libpvm_sources = [
     'scanner.c',
     'sourceloctable.c',
     'utils.c',
+    'utf8.c',
 ]
 
 libpvm_inst_headers = [
@@ -20,10 +21,15 @@ libpvm_inst_headers = [
     'pool.h',
     'scanner.h',
     'sourceloctable.h',
+    'utf8.h',
 ]
 
 libpvm_noinst_headers = [
     'utils.h',
+]
+
+libpvm_deps = [
+    dependency('icu-uc'),
 ]
 
 libpvm_headers = libpvm_noinst_headers + libpvm_inst_headers
@@ -37,6 +43,7 @@ test_cc_args = [
     '-Wno-unused-parameter',
     '-Wno-switch',
     '-Wno-unused-function',
+    '-Wno-maybe-uninitialized',
 ]
 
 conf = configuration_data()
@@ -63,6 +70,7 @@ libpvm = shared_library(
     'pvm',
     sources: libpvm_sources + libpvm_headers,
     c_args: global_cc_args,
+    dependencies: libpvm_deps,
     install: true,
 )
 
@@ -81,6 +89,7 @@ executable(
     sources: 'main.c',
     c_args: global_cc_args,
     link_with: libpvm,
+    dependencies: libpvm_deps,
     install: true,
 )
 

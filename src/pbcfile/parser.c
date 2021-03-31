@@ -16,6 +16,7 @@ static int8_t *read_file (const char *fname, uint64_t *flen);
 static Pool *build_pool (Parser *parser);
 static Header *build_header (Parser *parser);
 static char *read_n_bytes (Parser *parser, uint64_t n);
+static char *read_n_utf8_bytes (Parser *parser, uint64_t n);
 static inline bool is_next_i8 (Parser *parser, int8_t u);
 static inline bool is_next_u8 (Parser *parser, uint8_t u);
 static inline int8_t read_i8 (Parser *parser);
@@ -139,7 +140,7 @@ static Header *build_header (Parser *parser)
         vendor              = read_n_bytes (parser, vendor_len);
     }
 
-    Header* header = header_new (major, minor, patch, srcname, vendor);
+    Header *header = header_new (major, minor, patch, srcname, vendor);
     printf ("%s\n", header_to_string (header));
     return header;
 }
