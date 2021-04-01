@@ -16,7 +16,8 @@ struct _SourceLocTable
 };
 
 SourceLocTable* source_loc_table_new ();
-void source_loc_table_add (SourceLocTable* sltable, uint64_t index, uint64_t line);
+void source_loc_table_add (SourceLocTable* sltable, uint64_t index,
+                           uint64_t line);
 void source_loc_table_free (SourceLocTable* sltable);
 
 #endif /* __PVM_SOURCELOCTABLE_H__ */

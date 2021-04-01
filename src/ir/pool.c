@@ -73,7 +73,7 @@ const char* pool_entry_to_string (PoolEntry* entry)
     {
         case PVM_POOL_ENTRY_TYPE_UTF8:
         {
-            asprintf (&end, "value=%s]", entry->value.str);
+            asprintf (&end, "value='%s']", entry->value.str);
             break;
         }
 

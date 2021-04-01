@@ -1,11 +1,14 @@
 // parser.c: parser implementation as defined by parser.h
 // license information in LICENSE
+#define accept(p, b, msg) pvm_assert (read_u8 (p) == b, msg);
+
 #include "ir/code.h"
 #include "scanner.h"
-#include "utf8.h"
-#include "utils.h"
+#include "encoding/utf8.h"
+#include "utils/utils.h"
 #include "parser.h"
-#include "pool.h"
+#include "ir/pool.h"
+#include "common.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -20,6 +23,10 @@ static Header *build_header (Parser *parser);
 static char *read_n_bytes (Parser *parser, uint64_t n);
 static char *read_utf32_char (Parser *parser);
 static char *read_n_utf32_chars (Parser *parser, uint32_t n);
+
+static void check_header (Header *header);
+static void check_version (uint8_t patch, uint8_t min, uint8_t maj);
+
 static inline bool is_next_i8 (Parser *parser, int8_t u);
 static inline bool is_next_u8 (Parser *parser, uint8_t u);
 static inline int8_t read_i8 (Parser *parser);
@@ -82,9 +89,12 @@ static int8_t *read_file (const char *fname, uint64_t *flen)
 static Pool *build_pool (Parser *parser)
 {
     Pool *pool = pool_new ();
-    while (is_next_i8 (parser, PVM_PARSER_POOL_ENTRY_BEGIN))
+    accept (parser, PVM_PARSER_POOL_START,
+            "Expected constant pool start byte 0xCB");
+    uint32_t len = read_u32 (parser);
+
+    for (uint32_t i = 0; i < len; i++)
     {
-        parser->scanner->index++;
         PoolEntry *e;
         uint32_t len = read_u32 (parser);
         int8_t type  = read_i8 (parser);
@@ -95,7 +105,6 @@ static Pool *build_pool (Parser *parser)
         pvm_assert (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF32 ||
                         type == PVM_PARSER_POOL_ENTRY_TYPE_LONG,
                     errmsg);
-
 
         if (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF32)
         {
@@ -114,7 +123,7 @@ static Pool *build_pool (Parser *parser)
         }
 
         pool_add_entry (pool, e);
-        // printf ("%s\n", pool_entry_to_string (e));
+        printf ("%s\n", pool_entry_to_string (e));
     }
 
     return pool;
@@ -138,6 +147,7 @@ static Header *build_header (Parser *parser)
     }
 
     Header *header = header_new (major, minor, patch, srcname, vendor);
+    check_header (header);
     printf ("%s\n", header_to_string (header));
     return header;
 }
@@ -159,7 +169,6 @@ static char *read_utf32_char (Parser *parser)
     char *result = malloc (sizeof (char) * 4);
     uint32_t len;
     result = encode_utf8char (read_i32 (parser), &len);
-    printf ("r: %s\n", result);
     return result;
 }
 
@@ -172,6 +181,38 @@ static char *read_n_utf32_chars (Parser *parser, uint32_t n)
     }
 
     return buffer;
+}
+
+static void check_version (uint8_t patch, uint8_t min, uint8_t maj)
+{
+    if (maj > pvm_get_major ())
+    {
+        pvm_panicf (
+            "This version of the PVM is only designed to run bytecode with the "
+            "version 0x%02X or lower.\nPlease upgrade PVM to run this file.\n",
+            pvm_get_major ());
+    }
+
+    if (min % 2)
+    {
+        fprintf (stderr,
+                 "WARNING: you are running an unstable version of PVM. Do not "
+                 "expect stability from this version.\n");
+    }
+
+    pvm_assert (patch < 10, "Invalid patch version\n");
+}
+
+static void check_header (Header *header)
+{
+    check_version (header->patch, header->minor, header->major);
+    pvm_assert (
+        header->sourcename != NULL && strcmp (header->sourcename, "") != 0,
+        "Invalid source filename");
+
+    pvm_assert (strcmp (header->vendor, "<none>") == 0 ||
+                    strcmp (header->vendor, "") != 0,
+                "Invalid compiler vendor string");
 }
 
 static inline bool is_next_i8 (Parser *parser, int8_t u)

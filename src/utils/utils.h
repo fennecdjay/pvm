@@ -3,7 +3,7 @@
 #ifndef __PVM_UTIL_H__
 #define __PVM_UTIL_H__
 #define return_if_null(x) \
-    if ((x) == NULL)      \
+    if ((!x))             \
     {                     \
         return;           \
     }

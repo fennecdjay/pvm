@@ -13,7 +13,7 @@
 char* encode_utf8char (pchar c, uint32_t* len)
 {
     // First, convert to UTF-16
-    UChar i[8] = {0};
+    UChar i[8]   = {0};
     UErrorCode e = U_ZERO_ERROR;
     u_strFromUTF32 (i, 4, NULL, &c, 1, &e);
     if (e == U_INVALID_CHAR_FOUND)
@@ -31,7 +31,7 @@ char* encode_utf8char (pchar c, uint32_t* len)
 
 char* encode_utf8str (pstring str, uint64_t str_len)
 {
-    char* result = malloc (sizeof (char) * str_len * 4);
+    char* result  = malloc (sizeof (char) * str_len * 4);
     int32_t count = 0;
 
     for (uint64_t i = 0; i < str_len; i++)
