@@ -75,15 +75,16 @@ libpvm_headers = libpvm_noinst_headers + libpvm_inst_headers
 formatted_version = 'pvm-@0@'.format(meson.project_version())
 
 test_cc_args = [
-    '-Wall',
-    '-Wextra',
-    '-Werror',
-    '-Wno-pedantic',
-    '-Wno-unused-parameter',
-    '-Wno-switch',
-    '-Wno-unused-function',
-    '-Wno-maybe-uninitialized',
+  '-Wall',
+  '-Wextra',
+  '-Werror',
+  '-Wno-unused-function',
+  '-Wno-unused-parameter',
+  '-Wno-switch',
+  '-Wno-pedantic',
+  '-g',
 ]
+
 
 conf = configuration_data()
 conf.set('is_lil_endian_uwu', build_machine.endian() == 'little' ? 1 : 0)

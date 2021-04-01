@@ -56,7 +56,7 @@ int asprintf (char **strp, const char *fmt, ...)
     return n;
 }
 
-void pvm_errprintf (const char *msg, ...)
+void pvm_panicf (const char *msg, ...)
 {
     char *fmt;
     va_list ap;
@@ -128,15 +128,4 @@ uint64_t swap_u64 (uint64_t val)
     val = ((val << 16) & 0xFFFF0000FFFF0000ULL) |
           ((val >> 16) & 0x0000FFFF0000FFFFULL);
     return (val << 32) | (val >> 32);
-}
-
-bool is_little_endian ()
-{
-    union
-    {
-        uint32_t i;
-        char c[4];
-    } e = {0x01000000};
-
-    return !(e.c[0]);
 }

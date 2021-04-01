@@ -8,11 +8,11 @@
         return;           \
     }
 
-#define pvm_assert(x, msg)                                                    \
-    if (!(x))                                                                 \
-    {                                                                         \
-        pvm_errprintf ("%s: line %d, function %s: Assertion '%s' failed: %s", \
-                       __FILE__, __LINE__, __FUNCTION__, #x, msg);            \
+#define pvm_assert(x, msg)                                                 \
+    if (!(x))                                                              \
+    {                                                                      \
+        pvm_panicf ("%s: line %d, function %s: Assertion '%s' failed: %s", \
+                    __FILE__, __LINE__, __FUNCTION__, #x, msg);            \
     }
 
 #include <stdarg.h>
@@ -21,7 +21,7 @@
 
 int vasprintf (char **strp, const char *fmt, va_list ap);
 int asprintf (char **strp, const char *fmt, ...);
-void pvm_errprintf (const char *msg, ...);
+void pvm_panicf (const char *msg, ...);
 char *byte_array_to_string (int8_t *arr, uint32_t len);
 char *ubyte_array_to_string (uint8_t *arr, uint32_t len);
 
@@ -31,6 +31,5 @@ uint32_t swap_u32 (uint32_t val);
 int32_t swap_i32 (int32_t val);
 int64_t swap_i64 (int64_t val);
 uint64_t swap_u64 (uint64_t val);
-bool is_little_endian ();
 
 #endif /* __PVM_UTIL_H__ */

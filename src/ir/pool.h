@@ -39,7 +39,7 @@ struct _PoolEntry
 };
 
 PoolEntry* pool_entry_new_long (uint64_t l);
-PoolEntry* pool_entry_new_utf8 (char* str, uint64_t len);
+PoolEntry* pool_entry_new_utf32 (char* str, uint64_t len);
 const char* pool_entry_to_string (PoolEntry* entry);
 void pool_entry_free (PoolEntry* entry);
 

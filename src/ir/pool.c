@@ -56,7 +56,7 @@ PoolEntry* pool_entry_new_long (uint64_t l)
     return entry;
 }
 
-PoolEntry* pool_entry_new_utf8 (char* str, uint64_t len)
+PoolEntry* pool_entry_new_utf32 (char* str, uint64_t len)
 {
     PoolEntry* entry = pool_entry_new (PVM_POOL_ENTRY_TYPE_UTF8);
     entry->value.str = str;

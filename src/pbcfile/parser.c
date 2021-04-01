@@ -2,6 +2,7 @@
 // license information in LICENSE
 #include "ir/code.h"
 #include "scanner.h"
+#include "utf8.h"
 #include "utils.h"
 #include "parser.h"
 #include "pool.h"
@@ -11,12 +12,14 @@
 #include <string.h>
 #include <stdbool.h>
 #include <uchar.h>
+#include <unicode/umachine.h>
 
 static int8_t *read_file (const char *fname, uint64_t *flen);
 static Pool *build_pool (Parser *parser);
 static Header *build_header (Parser *parser);
 static char *read_n_bytes (Parser *parser, uint64_t n);
-static char *read_n_utf8_bytes (Parser *parser, uint64_t n);
+static char *read_utf32_char (Parser *parser);
+static char *read_n_utf32_chars (Parser *parser, uint32_t n);
 static inline bool is_next_i8 (Parser *parser, int8_t u);
 static inline bool is_next_u8 (Parser *parser, uint8_t u);
 static inline int8_t read_i8 (Parser *parser);
@@ -62,7 +65,7 @@ static int8_t *read_file (const char *fname, uint64_t *flen)
     fileptr = fopen (fname, "rb");
     if (fileptr == NULL)
     {
-        pvm_errprintf ("%s: %s (errno %d)", fname, strerror (errno), errno);
+        pvm_panicf ("%s: %s (errno %d)", fname, strerror (errno), errno);
     }
 
     fseek (fileptr, 0, SEEK_END);
@@ -89,21 +92,15 @@ static Pool *build_pool (Parser *parser)
         char *errmsg;
         asprintf (&errmsg, "Invalid constant pool entry type type 0x%02X",
                   type);
-        pvm_assert (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF8 ||
+        pvm_assert (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF32 ||
                         type == PVM_PARSER_POOL_ENTRY_TYPE_LONG,
                     errmsg);
 
-        if (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF8)
-        {
-            int bufsize  = sizeof (char) * len + 1;
-            char *buffer = malloc (bufsize);
-            for (uint32_t i = 0; i < len; i++)
-            {
-                buffer[i] = read_u8 (parser);
-            }
 
-            buffer[bufsize - 1] = 0;
-            e                   = pool_entry_new_utf8 (buffer, len);
+        if (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF32)
+        {
+            char *res = read_n_utf32_chars (parser, len);
+            e         = pool_entry_new_utf32 (res, len);
         }
         else
         {
@@ -117,7 +114,7 @@ static Pool *build_pool (Parser *parser)
         }
 
         pool_add_entry (pool, e);
-        printf ("%s\n", pool_entry_to_string (e));
+        // printf ("%s\n", pool_entry_to_string (e));
     }
 
     return pool;
@@ -155,6 +152,26 @@ static char *read_n_bytes (Parser *parser, uint64_t n)
 
     s[sizeof (char) * n] = 0;
     return s;
+}
+
+static char *read_utf32_char (Parser *parser)
+{
+    char *result = malloc (sizeof (char) * 4);
+    uint32_t len;
+    result = encode_utf8char (read_i32 (parser), &len);
+    printf ("r: %s\n", result);
+    return result;
+}
+
+static char *read_n_utf32_chars (Parser *parser, uint32_t n)
+{
+    char *buffer = calloc (4, sizeof (char) * n + 1);
+    for (uint32_t i = 0; i < n / 4; i++)
+    {
+        strcat (buffer, read_utf32_char (parser));
+    }
+
+    return buffer;
 }
 
 static inline bool is_next_i8 (Parser *parser, int8_t u)

@@ -12,8 +12,8 @@ static void scanner_assert_remaining (Scanner* scanner, uint8_t remaining)
 {
     if ((scanner->length - scanner->index) < remaining)
     {
-        pvm_errprintf ("Ran out of bytes: %d expected, got %d", remaining,
-                       scanner->length - scanner->index);
+        pvm_panicf ("Ran out of bytes: %d expected, got %d", remaining,
+                    scanner->length - scanner->index);
     }
 }
 
@@ -30,6 +30,10 @@ Scanner* scanner_new (const char* input_name, int8_t* input,
 
 int8_t scanner_look_i8 (Scanner* scanner)
 {
+    if (scanner->length - scanner->index <= 0)
+    {
+        pvm_panicf ("Ran out of bytes: none left");
+    }
     return scanner->input[scanner->index];
 }
 
