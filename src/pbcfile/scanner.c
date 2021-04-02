@@ -30,16 +30,16 @@ Scanner* scanner_new (const char* input_name, int8_t* input,
 
 int8_t scanner_look_i8 (Scanner* scanner)
 {
-    if (scanner->length - scanner->index <= 0)
-    {
-        pvm_panicf ("Ran out of bytes: none left");
-    }
     return scanner->input[scanner->index];
 }
 
 int8_t scanner_next_i8 (Scanner* scanner)
 {
-    scanner_assert_remaining (scanner, 1);
+    if (scanner->index >= scanner->length)
+    {
+        pvm_panicf ("Ran out of bytes: none left");
+    }
+
     return scanner->input[scanner->index++];
 }
 
@@ -180,8 +180,7 @@ uint64_t scanner_look_u64 (Scanner* scanner)
 
 uint8_t scanner_next_u8 (Scanner* scanner)
 {
-    scanner_assert_remaining (scanner, 1);
-    return (uint8_t) scanner->input[scanner->index++];
+    return (uint8_t) scanner_next_i8 (scanner);
 }
 
 uint16_t scanner_next_u16 (Scanner* scanner)

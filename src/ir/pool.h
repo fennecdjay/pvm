@@ -3,6 +3,7 @@
 #ifndef __PVM_POOL_H__
 #define __PVM_POOL_H__
 #include <stdint.h>
+#include <stdbool.h>
 #define POOL_INIT_ENTRIES_SIZE 10
 #include <inttypes.h>
 #include <uchar.h>
@@ -19,18 +20,19 @@ typedef enum
 struct _Pool
 {
     PoolEntry** entries;
-    uint64_t entries_count;
-    uint64_t entries_capacity;
+    uint32_t entries_count;
+    uint32_t entries_capacity;
 };
 
 Pool* pool_new ();
 void pool_add_entry (Pool* pool, PoolEntry* entry);
+bool pool_has_entry (Pool* pool, uint32_t idx);
 void pool_free (Pool* pool);
 
 struct _PoolEntry
 {
     EntryType type;
-    uint64_t len;
+    uint32_t len;
     union
     {
         char* str;
@@ -39,7 +41,7 @@ struct _PoolEntry
 };
 
 PoolEntry* pool_entry_new_long (uint64_t l);
-PoolEntry* pool_entry_new_utf32 (char* str, uint64_t len);
+PoolEntry* pool_entry_new_utf32 (char* str, uint32_t len);
 const char* pool_entry_to_string (PoolEntry* entry);
 void pool_entry_free (PoolEntry* entry);
 

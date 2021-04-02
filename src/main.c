@@ -9,7 +9,7 @@
 int main (int argc, char** argv)
 {
     Parser* p = parser_new ("main.pbc");
-    Code* c   = parser_parse (p);
+    Code* c = parser_parse (p);
     code_free (c);
     parser_free (p);
     return 0;

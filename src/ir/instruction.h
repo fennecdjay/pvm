@@ -10,11 +10,11 @@ typedef struct _Instruction Instruction;
 struct _Instruction
 {
     OpCode op;
-    int8_t* args;
+    int32_t* args;
     uint8_t args_len;
 };
 
-Instruction* instruction_new (OpCode op, int8_t* args, uint8_t args_len);
+Instruction* instruction_new (OpCode op, int32_t* args, uint8_t args_len);
 const char* instruction_disassemble (Instruction* instruction);
 void instruction_free (Instruction* instruction);
 

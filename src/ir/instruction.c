@@ -2,10 +2,11 @@
 // license information in LICENSE
 #include "instruction.h"
 #include <stdlib.h>
-#include "utils.h"
+#include "utils/utils.h"
+#include <stdio.h>
 #include "opcode.h"
 
-Instruction* instruction_new (OpCode op, int8_t* args, uint8_t args_len)
+Instruction* instruction_new (OpCode op, int32_t* args, uint8_t args_len)
 {
     Instruction* i = checked_malloc (sizeof (Instruction));
     i->args        = args;
@@ -17,7 +18,7 @@ Instruction* instruction_new (OpCode op, int8_t* args, uint8_t args_len)
 const char* instruction_disassemble (Instruction* instruction)
 {
     char* result;
-    asprintf (&result, "    %s (%d argument bytes)",
+    asprintf (&result, "    %s (%d argumens)",
               op_code_to_string (instruction->op), instruction->args_len);
 
     return result;

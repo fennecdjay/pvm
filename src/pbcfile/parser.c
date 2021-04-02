@@ -1,5 +1,8 @@
 // parser.c: parser implementation as defined by parser.h
 // license information in LICENSE
+#include "instruction.h"
+#include "opcode.h"
+#include "sourceloctable.h"
 #define accept(p, b, msg) pvm_assert (read_u8 (p) == b, msg);
 
 #include "ir/code.h"
@@ -23,6 +26,12 @@ static Header *build_header (Parser *parser);
 static char *read_n_bytes (Parser *parser, uint64_t n);
 static char *read_utf32_char (Parser *parser);
 static char *read_n_utf32_chars (Parser *parser, uint32_t n);
+static Function **read_functions (Parser *parser, Pool *pool, uint32_t count);
+static Function *read_function (Parser *parser, Pool *pool);
+static Instruction *read_instruction (Parser *parser);
+static Instruction **read_function_body (Parser *parser, uint32_t code_len);
+static SourceLocTable *read_source_loc_table (Parser *parser,
+                                              Function *function);
 
 static void check_header (Header *header);
 static void check_version (uint8_t patch, uint8_t min, uint8_t maj);
@@ -52,8 +61,12 @@ Code *parser_parse (Parser *parser)
 {
     Header *file_header = build_header (parser);
     Pool *constant_pool = build_pool (parser);
-    //Function** funcs = checked_malloc (sizeof (Function) * read_u32 (parser));
-    return code_new (NULL, 0, file_header, constant_pool);
+
+    uint32_t functions_len = read_u32 (parser);
+    Function **functions =
+        read_functions (parser, constant_pool, functions_len);
+
+    return code_new (functions, functions_len, file_header, constant_pool);
 }
 
 void parser_free (Parser *parser)
@@ -202,6 +215,91 @@ static void check_version (uint8_t patch, uint8_t min, uint8_t maj)
     }
 
     pvm_assert (patch < 10, "Invalid patch version\n");
+}
+
+static Function **read_functions (Parser *parser, Pool *pool, uint32_t len)
+{
+    if (len == 0)
+    {
+        return calloc (0, sizeof (Function *));
+    }
+
+    Function **result = malloc (sizeof (Function *) * len);
+    for (uint32_t i = 0; i < len; i++)
+    {
+        result[i] = read_function (parser, pool);
+    }
+
+    return result;
+}
+
+static Function *read_function (Parser *parser, Pool *pool)
+{
+    char fmt[] = "Undefined constant pool entry 0x%02X";
+    char *out;
+
+    uint32_t sig = read_u32 (parser);
+    asprintf (&out, fmt, sig);
+    pvm_assert (pool_has_entry (pool, sig), out);
+
+    uint32_t name = read_u32 (parser);
+    asprintf (&out, fmt, name);
+    pvm_assert (pool_has_entry (pool, name), out);
+
+    uint32_t code_len  = read_u32 (parser);
+    Instruction **body = read_function_body (parser, code_len);
+
+    return function_new (body, code_len, name, sig, 0, NULL);
+}
+
+static Instruction **read_function_body (Parser *parser, uint32_t code_len)
+{
+    Instruction **result = calloc (code_len, sizeof (Instruction *));
+    uint32_t count       = 0;
+    for (uint32_t i = 0; i < code_len; i++)
+    {
+        Instruction *i = read_instruction (parser);
+        if (i != NULL)
+        {
+            result[count++] = i;
+        }
+    }
+
+    return realloc (result, sizeof (Instruction*) * count);
+}
+
+static Instruction *read_instruction (Parser *parser)
+{
+    uint8_t opcode = read_u8 (parser);
+    printf ("Instruction: %d\n", opcode);
+
+    switch (opcode)
+    {
+        // Does nothing.
+        case OP_NOOP:
+        {
+            return NULL;
+        }
+
+        case OP_ICONST_1:
+        case OP_ICONST_0:
+        {
+            return instruction_new (opcode, NULL, 0);
+        }
+
+        case OP_IPUSH:
+        {
+            int32_t args[] = {read_i32 (parser)};
+            return instruction_new (opcode, args, 1);
+        }
+
+        default:
+        {
+            pvm_panicf ("Unknown opcode: 0x%02X", opcode);
+        }
+    }
+
+    return NULL;
 }
 
 static void check_header (Header *header)

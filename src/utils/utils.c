@@ -46,9 +46,9 @@ int vasprintf (char **strp, const char *fmt, va_list ap)
     return (r);
 }
 
-void* checked_malloc (size_t size)
+void *checked_malloc (size_t size)
 {
-    void* ptr = malloc (size);
+    void *ptr = malloc (size);
     pvm_assert (ptr != NULL, "Not enough memory");
     return ptr;
 }

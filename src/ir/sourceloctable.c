@@ -9,9 +9,9 @@ SourceLocTable* source_loc_table_new ()
 {
     SourceLocTable* slt = checked_malloc (sizeof (SourceLocTable));
     slt->length         = 0;
-    slt->keys           = checked_malloc (sizeof (uint64_t) * SLTABLE_INIT_SIZE);
-    slt->values         = checked_malloc (sizeof (uint64_t) * SLTABLE_INIT_SIZE);
-    slt->capacity       = SLTABLE_INIT_SIZE;
+    slt->keys     = checked_malloc (sizeof (uint64_t) * SLTABLE_INIT_SIZE);
+    slt->values   = checked_malloc (sizeof (uint64_t) * SLTABLE_INIT_SIZE);
+    slt->capacity = SLTABLE_INIT_SIZE;
     return slt;
 }
 
