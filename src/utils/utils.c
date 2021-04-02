@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
 #include <limits.h>
 
@@ -77,23 +78,15 @@ void pvm_panicf (const char *msg, ...)
 
 char *byte_array_to_string (int8_t *arr, uint32_t len)
 {
-    char *result = checked_malloc (sizeof (char) * len);
-    for (uint32_t i = 0; i < len; i++)
-    {
-        result[i] = (char) arr[i];
-    }
-
+    char *result = checked_malloc (sizeof (arr));
+    memcpy (result, arr, sizeof (int8_t) * len);
     return result;
 }
 
 char *ubyte_array_to_string (uint8_t *arr, uint32_t len)
 {
     char *result = checked_malloc (sizeof (char) * len);
-    for (uint32_t i = 0; i < len; i++)
-    {
-        result[i] = (char) arr[i];
-    }
-
+    memcpy (result, arr, sizeof (uint8_t) * len);
     return result;
 }
 
