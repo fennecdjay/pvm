@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <unicode/utypes.h>
 #include <string.h>
-#include "utils.h"
+#include "utils/utils.h"
 
 char* encode_utf8char (pchar c, uint32_t* len)
 {

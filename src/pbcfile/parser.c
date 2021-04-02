@@ -1,8 +1,8 @@
 // parser.c: parser implementation as defined by parser.h
 // license information in LICENSE
-#include "instruction.h"
-#include "opcode.h"
-#include "sourceloctable.h"
+#include "ir/instruction.h"
+#include "ir/opcode.h"
+#include "ir/sourceloctable.h"
 #define accept(p, b, msg) pvm_assert (read_u8 (p) == b, msg);
 
 #include "ir/code.h"
@@ -11,7 +11,7 @@
 #include "utils/utils.h"
 #include "parser.h"
 #include "ir/pool.h"
-#include "common.h"
+#include "utils/common.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <errno.h>

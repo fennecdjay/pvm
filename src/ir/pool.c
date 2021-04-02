@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <uchar.h>
-#include "utils.h"
+#include "utils/utils.h"
 
 static PoolEntry* pool_entry_new (EntryType type);
 

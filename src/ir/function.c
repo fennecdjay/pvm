@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "instruction.h"
 #include "sourceloctable.h"
-#include "utils.h"
+#include "utils/utils.h"
 
 Function* function_new (Instruction** instructions, uint32_t instructions_len,
                         uint32_t name_ref, uint32_t sig_ref, uint32_t arity,

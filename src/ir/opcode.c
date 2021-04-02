@@ -1,7 +1,7 @@
 // opcode.c: opcode helper methods as defined by opcode.h
 // license information in LICENSE
 #include "opcode.h"
-#include "utils.h"
+#include "utils/utils.h"
 
 const char* op_code_to_string (OpCode code)
 {

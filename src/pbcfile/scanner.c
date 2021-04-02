@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "utils.h"
+#include "utils/utils.h"
 #include "config.h"
 
 static void scanner_assert_remaining (Scanner* scanner, uint8_t remaining)

@@ -3,7 +3,7 @@
 // license information in LICENSE
 #include "sourceloctable.h"
 #include <stdlib.h>
-#include "utils.h"
+#include "utils/utils.h"
 
 SourceLocTable* source_loc_table_new ()
 {
