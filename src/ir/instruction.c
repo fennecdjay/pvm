@@ -7,7 +7,7 @@
 
 Instruction* instruction_new (OpCode op, int8_t* args, uint8_t args_len)
 {
-    Instruction* i = malloc (sizeof (Instruction));
+    Instruction* i = checked_malloc (sizeof (Instruction));
     i->args        = args;
     i->op          = op;
     i->args_len    = args_len;

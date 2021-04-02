@@ -41,7 +41,7 @@ static inline uint64_t read_u64 (Parser *parser);
 
 Parser *parser_new (const char *input_filename)
 {
-    Parser *p         = malloc (sizeof (Parser));
+    Parser *p         = checked_malloc (sizeof (Parser));
     p->input_filename = input_filename;
     p->input          = read_file (input_filename, &p->input_len);
     p->scanner        = scanner_new (input_filename, p->input, p->input_len);
@@ -50,9 +50,10 @@ Parser *parser_new (const char *input_filename)
 
 Code *parser_parse (Parser *parser)
 {
-    build_header (parser);
-    build_pool (parser);
-    return NULL;
+    Header *file_header = build_header (parser);
+    Pool *constant_pool = build_pool (parser);
+    //Function** funcs = checked_malloc (sizeof (Function) * read_u32 (parser));
+    return code_new (NULL, 0, file_header, constant_pool);
 }
 
 void parser_free (Parser *parser)
@@ -79,7 +80,7 @@ static int8_t *read_file (const char *fname, uint64_t *flen)
     len = ftell (fileptr);
     rewind (fileptr);
 
-    buffer = (int8_t *) malloc (len * sizeof (int8_t));
+    buffer = (int8_t *) checked_malloc (len * sizeof (int8_t));
     fread (buffer, len, 1, fileptr);
     fclose (fileptr);
     *flen = len;
@@ -154,7 +155,7 @@ static Header *build_header (Parser *parser)
 
 static char *read_n_bytes (Parser *parser, uint64_t n)
 {
-    char *s = malloc (sizeof (char) * (n + 1));
+    char *s = checked_malloc (sizeof (char) * (n + 1));
     for (uint64_t i = 0; i < n; i++)
     {
         s[i] = read_u8 (parser);
@@ -166,7 +167,7 @@ static char *read_n_bytes (Parser *parser, uint64_t n)
 
 static char *read_utf32_char (Parser *parser)
 {
-    char *result = malloc (sizeof (char) * 4);
+    char *result = checked_malloc (sizeof (char) * 4);
     uint32_t len;
     result = encode_utf8char (read_i32 (parser), &len);
     return result;

@@ -23,7 +23,7 @@ char* encode_utf8char (pchar c, uint32_t* len)
     *len = u_countChar32 (i, -1);
 
     // Then convert to UTF-8
-    char* dest = malloc (sizeof (char) * 4);
+    char* dest = checked_malloc (sizeof (char) * 4);
     u_strToUTF8 (dest, 4, NULL, i, sizeof (UChar) * 4, &e);
 
     return dest;
@@ -31,7 +31,7 @@ char* encode_utf8char (pchar c, uint32_t* len)
 
 char* encode_utf8str (pstring str, uint64_t str_len)
 {
-    char* result  = malloc (sizeof (char) * str_len * 4);
+    char* result  = checked_malloc (sizeof (char) * str_len * 4);
     int32_t count = 0;
 
     for (uint64_t i = 0; i < str_len; i++)
@@ -39,10 +39,8 @@ char* encode_utf8str (pstring str, uint64_t str_len)
         char* ch;
         uint32_t len;
         ch = encode_utf8char (str[i], &len);
-        for (uint32_t n = 0; n < len; n++)
-        {
-            result[count++] = ch[n];
-        }
+        memcpy (result, ch, count * sizeof (char));
+        count += len;
     }
 
     return result;

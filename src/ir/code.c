@@ -1,14 +1,14 @@
 // code.c: bytecode tree implementation as defined by code.h
 // license information in LICENSE
 #include "code.h"
-#include "utils.h"
+#include "utils/utils.h"
 #include "pool.h"
 #include <stdlib.h>
 
 Code* code_new (Function** functions, uint32_t functions_len, Header* header,
                 Pool* pool)
 {
-    Code* code          = malloc (sizeof (Code));
+    Code* code          = checked_malloc (sizeof (Code));
     code->functions     = functions;
     code->functions_len = functions_len;
     code->header        = header;
@@ -33,7 +33,7 @@ void code_free (Code* code)
 Header* header_new (int major, int minor, int patch, char* sourcename,
                     char* vendor)
 {
-    Header* h     = malloc (sizeof (Header));
+    Header* h     = checked_malloc (sizeof (Header));
     h->major      = major;
     h->minor      = minor;
     h->patch      = patch;

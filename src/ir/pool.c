@@ -9,8 +9,8 @@ static PoolEntry* pool_entry_new (EntryType type);
 
 Pool* pool_new ()
 {
-    Pool* pool    = malloc (sizeof (Pool));
-    pool->entries = malloc (sizeof (PoolEntry*) * POOL_INIT_ENTRIES_SIZE);
+    Pool* pool    = checked_malloc (sizeof (Pool));
+    pool->entries = checked_malloc (sizeof (PoolEntry*) * POOL_INIT_ENTRIES_SIZE);
     pool->entries_capacity = POOL_INIT_ENTRIES_SIZE;
     pool->entries_count    = 0;
     return pool;
@@ -43,7 +43,7 @@ void pool_free (Pool* pool)
 
 static PoolEntry* pool_entry_new (EntryType type)
 {
-    PoolEntry* entry = malloc (sizeof (PoolEntry));
+    PoolEntry* entry = checked_malloc (sizeof (PoolEntry));
     entry->type      = type;
     return entry;
 }

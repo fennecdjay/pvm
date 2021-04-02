@@ -20,7 +20,7 @@ static void scanner_assert_remaining (Scanner* scanner, uint8_t remaining)
 Scanner* scanner_new (const char* input_name, int8_t* input,
                       uint64_t input_length)
 {
-    Scanner* scanner    = malloc (sizeof (Scanner));
+    Scanner* scanner    = checked_malloc (sizeof (Scanner));
     scanner->index      = 0;
     scanner->input_name = input_name;
     scanner->input      = input;

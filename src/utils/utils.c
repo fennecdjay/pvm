@@ -24,7 +24,7 @@ int vasprintf (char **strp, const char *fmt, va_list ap)
 
     if ((size >= 0) && (size < INT_MAX))
     {
-        *strp = (char *) malloc (size + 1);  //+1 for null
+        *strp = (char *) checked_malloc (size + 1);  //+1 for null
         if (*strp)
         {
             r = vsnprintf (*strp, size + 1, fmt, ap);  //+1 for null
@@ -43,6 +43,13 @@ int vasprintf (char **strp, const char *fmt, va_list ap)
     va_end (ap2);
 
     return (r);
+}
+
+void* checked_malloc (size_t size)
+{
+    void* ptr = malloc (size);
+    pvm_assert (ptr != NULL, "Not enough memory");
+    return ptr;
 }
 
 int asprintf (char **strp, const char *fmt, ...)
@@ -70,7 +77,7 @@ void pvm_panicf (const char *msg, ...)
 
 char *byte_array_to_string (int8_t *arr, uint32_t len)
 {
-    char *result = malloc (sizeof (char) * len);
+    char *result = checked_malloc (sizeof (char) * len);
     for (uint32_t i = 0; i < len; i++)
     {
         result[i] = (char) arr[i];
@@ -81,7 +88,7 @@ char *byte_array_to_string (int8_t *arr, uint32_t len)
 
 char *ubyte_array_to_string (uint8_t *arr, uint32_t len)
 {
-    char *result = malloc (sizeof (char) * len);
+    char *result = checked_malloc (sizeof (char) * len);
     for (uint32_t i = 0; i < len; i++)
     {
         result[i] = (char) arr[i];

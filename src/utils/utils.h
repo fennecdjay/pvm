@@ -16,6 +16,7 @@
     }
 
 #include <stdarg.h>
+#include <stddef.h>
 #include <inttypes.h>
 #include <stdbool.h>
 
@@ -24,6 +25,7 @@ int asprintf (char **strp, const char *fmt, ...);
 void pvm_panicf (const char *msg, ...);
 char *byte_array_to_string (int8_t *arr, uint32_t len);
 char *ubyte_array_to_string (uint8_t *arr, uint32_t len);
+void* checked_malloc (size_t size);
 
 uint16_t swap_u16 (uint16_t val);
 int16_t swap_i16 (int16_t val);
