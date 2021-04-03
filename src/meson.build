@@ -147,11 +147,6 @@ install_headers(
     subdir: formatted_version + '/pvm',
 )
 
-install_headers(
-    'pvm.h',
-    subdir: formatted_version,
-)
-
 executable(
     'pvm',
     sources: 'main.c',
