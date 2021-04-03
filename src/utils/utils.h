@@ -20,12 +20,14 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-int vasprintf (char **strp, const char *fmt, va_list ap);
-int asprintf (char **strp, const char *fmt, ...);
-void pvm_panicf (const char *msg, ...);
-char *byte_array_to_string (int8_t *arr, uint32_t len);
-char *ubyte_array_to_string (uint8_t *arr, uint32_t len);
-void *checked_malloc (size_t size);
+int vasprintf (char** strp, const char* fmt, va_list ap);
+int asprintf (char** strp, const char* fmt, ...);
+void pvm_panicf (const char* msg, ...);
+char* byte_array_to_string (int8_t* arr, uint32_t len);
+char* ubyte_array_to_string (uint8_t* arr, uint32_t len);
+void* checked_malloc (size_t size);
+void* checked_calloc (size_t n, size_t size);
+void fill_pointer (void** ptr, void* data, uint32_t len);
 
 uint16_t swap_u16 (uint16_t val);
 int16_t swap_i16 (int16_t val);

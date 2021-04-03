@@ -25,6 +25,9 @@ typedef enum
     STACK_EMULATOR_ITEM_TYPE_OBJECTREF,
 } StackEmulatorItemType;
 
+char* stack_emulator_item_type_to_string (StackEmulatorItemType type,
+                                          StackEmulator* se);
+
 struct _StackEmulator
 {
     Instruction** input;

@@ -14,7 +14,7 @@
         ptr = 0;         \
     }
 // Only linux has vasprintf, so were going to implement it here.
-int vasprintf (char **strp, const char *fmt, va_list ap)
+int vasprintf (char** strp, const char* fmt, va_list ap)
 {
     int r = -1, size;
 
@@ -25,7 +25,7 @@ int vasprintf (char **strp, const char *fmt, va_list ap)
 
     if ((size >= 0) && (size < INT_MAX))
     {
-        *strp = (char *) checked_malloc (size + 1);  //+1 for null
+        *strp = (char*) checked_malloc (size + 1);  //+1 for null
         if (*strp)
         {
             r = vsnprintf (*strp, size + 1, fmt, ap);  //+1 for null
@@ -46,48 +46,64 @@ int vasprintf (char **strp, const char *fmt, va_list ap)
     return (r);
 }
 
-void *checked_malloc (size_t size)
+void* checked_malloc (size_t size)
 {
-    void *ptr = malloc (size);
+    void* ptr = malloc (size);
     pvm_assert (ptr != NULL, "Not enough memory");
     return ptr;
 }
 
-int asprintf (char **strp, const char *fmt, ...)
+void* checked_calloc (size_t n, size_t size)
+{
+    void* ptr = calloc (n, size);
+    pvm_assert (ptr != NULL, "Not enough memory");
+    return ptr;
+}
+
+int asprintf (char** strp, const char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    char *msg;
+    char* msg;
     int n = vasprintf (&msg, fmt, ap);
     va_end (ap);
     *strp = msg;
     return n;
 }
 
-void pvm_panicf (const char *msg, ...)
+void pvm_panicf (const char* msg, ...)
 {
-    char *fmt;
+    char* fmt;
     va_list ap;
     va_start (ap, msg);
     vasprintf (&fmt, msg, ap);
     va_end (ap);
-    printf ("Error: %s\n", fmt);
+    fprintf (stderr, "Error: %s\n", fmt);
+    fprintf (stderr, "Fatal error, aborting.\n");
     free (fmt);
     exit (1);
 }
 
-char *byte_array_to_string (int8_t *arr, uint32_t len)
+char* byte_array_to_string (int8_t* arr, uint32_t len)
 {
-    char *result = checked_malloc (sizeof (arr));
+    char* result = checked_malloc (sizeof (arr));
     memcpy (result, arr, sizeof (int8_t) * len);
     return result;
 }
 
-char *ubyte_array_to_string (uint8_t *arr, uint32_t len)
+char* ubyte_array_to_string (uint8_t* arr, uint32_t len)
 {
-    char *result = checked_malloc (sizeof (char) * len);
+    char* result = checked_malloc (sizeof (char) * len);
     memcpy (result, arr, sizeof (uint8_t) * len);
     return result;
+}
+
+void fill_pointer (void** ptr, void* data, uint32_t len)
+{
+    for (uint32_t i = 0; i < len; i++)
+    {
+        ptr[i] = data;
+    }
 }
 
 uint16_t swap_u16 (uint16_t val)

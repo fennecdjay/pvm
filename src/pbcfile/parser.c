@@ -21,56 +21,56 @@
 #include <uchar.h>
 #include <unicode/umachine.h>
 
-static int8_t *read_file (const char *fname, uint32_t *flen);
-static Pool *build_pool (Parser *parser);
-static Header *build_header (Parser *parser);
-static char *read_n_bytes (Parser *parser, uint32_t n);
-static char *read_utf32_char (Parser *parser);
-static char *read_n_utf32_chars (Parser *parser, uint32_t n);
-static Function **read_functions (Parser *parser, Pool *pool, uint32_t count);
-static Function *read_function (Parser *parser, Pool *pool);
-static Instruction *read_instruction (Parser *parser);
-static Instruction **read_function_body (Parser *parser, uint32_t code_len);
-static SourceLocTable *read_source_loc_table (Parser *parser,
-                                              Function *function);
+static int8_t* read_file (const char* fname, uint32_t* flen);
+static Pool* build_pool (Parser* parser);
+static Header* build_header (Parser* parser);
+static char* read_n_bytes (Parser* parser, uint32_t n);
+static char* read_utf32_char (Parser* parser);
+static char* read_n_utf32_chars (Parser* parser, uint32_t n);
+static Function** read_functions (Parser* parser, Pool* pool, uint32_t count);
+static Function* read_function (Parser* parser, Pool* pool);
+static Instruction* read_instruction (Parser* parser);
+static Instruction** read_function_body (Parser* parser, uint32_t code_len);
+static SourceLocTable* read_source_loc_table (Parser* parser,
+                                              Function* function);
 
-static void check_header (Header *header);
+static void check_header (Header* header);
 static void check_version (uint8_t patch, uint8_t min, uint8_t maj);
 
-static inline bool is_next_i8 (Parser *parser, int8_t u);
-static inline bool is_next_u8 (Parser *parser, uint8_t u);
-static inline int8_t read_i8 (Parser *parser);
-static inline int16_t read_i16 (Parser *parser);
-static inline int32_t read_i32 (Parser *parser);
-static inline int64_t read_i64 (Parser *parser);
+static inline bool is_next_i8 (Parser* parser, int8_t u);
+static inline bool is_next_u8 (Parser* parser, uint8_t u);
+static inline int8_t read_i8 (Parser* parser);
+static inline int16_t read_i16 (Parser* parser);
+static inline int32_t read_i32 (Parser* parser);
+static inline int64_t read_i64 (Parser* parser);
 
-static inline uint8_t read_u8 (Parser *parser);
-static inline uint16_t read_u16 (Parser *parser);
-static inline uint32_t read_u32 (Parser *parser);
-static inline uint64_t read_u64 (Parser *parser);
+static inline uint8_t read_u8 (Parser* parser);
+static inline uint16_t read_u16 (Parser* parser);
+static inline uint32_t read_u32 (Parser* parser);
+static inline uint64_t read_u64 (Parser* parser);
 
-Parser *parser_new (const char *input_filename)
+Parser* parser_new (const char* input_filename)
 {
-    Parser *p         = checked_malloc (sizeof (Parser));
+    Parser* p         = checked_malloc (sizeof (Parser));
     p->input_filename = input_filename;
     p->input          = read_file (input_filename, &p->input_len);
     p->scanner        = scanner_new (input_filename, p->input, p->input_len);
     return p;
 }
 
-Code *parser_parse (Parser *parser)
+Code* parser_parse (Parser* parser)
 {
-    Header *file_header = build_header (parser);
-    Pool *constant_pool = build_pool (parser);
+    Header* file_header = build_header (parser);
+    Pool* constant_pool = build_pool (parser);
 
     uint32_t functions_len = read_u32 (parser);
-    Function **functions =
+    Function** functions =
         read_functions (parser, constant_pool, functions_len);
 
     return code_new (functions, functions_len, file_header, constant_pool);
 }
 
-void parser_free (Parser *parser)
+void parser_free (Parser* parser)
 {
     return_if_null (parser);
     free (parser->input);
@@ -78,10 +78,10 @@ void parser_free (Parser *parser)
     free (parser);
 }
 
-static int8_t *read_file (const char *fname, uint32_t *flen)
+static int8_t* read_file (const char* fname, uint32_t* flen)
 {
-    FILE *fileptr;
-    int8_t *buffer;
+    FILE* fileptr;
+    int8_t* buffer;
     uint32_t len;
 
     fileptr = fopen (fname, "rb");
@@ -94,27 +94,27 @@ static int8_t *read_file (const char *fname, uint32_t *flen)
     len = ftell (fileptr);
     rewind (fileptr);
 
-    buffer = (int8_t *) checked_malloc (len * sizeof (int8_t));
+    buffer = (int8_t*) checked_malloc (len * sizeof (int8_t));
     fread (buffer, len, 1, fileptr);
     fclose (fileptr);
     *flen = len;
     return buffer;
 }
 
-static Pool *build_pool (Parser *parser)
+static Pool* build_pool (Parser* parser)
 {
-    Pool *pool = pool_new ();
+    Pool* pool = pool_new ();
     accept (parser, PVM_PARSER_POOL_START,
             "Expected constant pool start byte 0xCB");
     uint32_t len = read_u32 (parser);
 
     for (uint32_t i = 0; i < len; i++)
     {
-        PoolEntry *e;
+        PoolEntry* e;
         uint32_t len = read_u32 (parser);
         int8_t type  = read_i8 (parser);
         pvm_assert (len != 0, "Invalid constant pool entry length 0");
-        char *errmsg;
+        char* errmsg;
         asprintf (&errmsg, "Invalid constant pool entry type type 0x%02X",
                   type);
         pvm_assert (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF32 ||
@@ -123,12 +123,12 @@ static Pool *build_pool (Parser *parser)
 
         if (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF32)
         {
-            char *res = read_n_utf32_chars (parser, len);
+            char* res = read_n_utf32_chars (parser, len);
             e         = pool_entry_new_utf32 (res, len);
         }
         else
         {
-            char *len_err_msg;
+            char* len_err_msg;
             asprintf (&len_err_msg,
                       "Invalid constant pool entry length 0x%04X for type long",
                       len);
@@ -144,7 +144,7 @@ static Pool *build_pool (Parser *parser)
     return pool;
 }
 
-static Header *build_header (Parser *parser)
+static Header* build_header (Parser* parser)
 {
     // Get the version
     uint8_t major = read_u8 (parser);
@@ -152,24 +152,24 @@ static Header *build_header (Parser *parser)
     uint8_t patch = read_u8 (parser);
 
     uint8_t srcname_len = read_u8 (parser);
-    char *srcname       = read_n_bytes (parser, srcname_len);
+    char* srcname       = read_n_bytes (parser, srcname_len);
     bool hasvendor      = !is_next_u8 (parser, PVM_PARSER_POOL_START);
-    char *vendor        = NULL;
+    char* vendor        = NULL;
     if (hasvendor)
     {
         uint32_t vendor_len = read_u16 (parser);
         vendor              = read_n_bytes (parser, vendor_len);
     }
 
-    Header *header = header_new (major, minor, patch, srcname, vendor);
+    Header* header = header_new (major, minor, patch, srcname, vendor);
     check_header (header);
     printf ("%s\n", header_to_string (header));
     return header;
 }
 
-static char *read_n_bytes (Parser *parser, uint32_t n)
+static char* read_n_bytes (Parser* parser, uint32_t n)
 {
-    char *s = checked_malloc (sizeof (char) * (n + 1));
+    char* s = checked_malloc (sizeof (char) * (n + 1));
     for (uint32_t i = 0; i < n; i++)
     {
         s[i] = read_u8 (parser);
@@ -179,17 +179,17 @@ static char *read_n_bytes (Parser *parser, uint32_t n)
     return s;
 }
 
-static char *read_utf32_char (Parser *parser)
+static char* read_utf32_char (Parser* parser)
 {
-    char *result = checked_malloc (sizeof (char) * 4);
+    char* result = checked_malloc (sizeof (char) * 4);
     uint32_t len;
     result = encode_utf8char (read_i32 (parser), &len);
     return result;
 }
 
-static char *read_n_utf32_chars (Parser *parser, uint32_t n)
+static char* read_n_utf32_chars (Parser* parser, uint32_t n)
 {
-    char *buffer = calloc (4, sizeof (char) * n + 1);
+    char* buffer = calloc (4, sizeof (char) * n + 1);
     for (uint32_t i = 0; i < n / 4; i++)
     {
         strcat (buffer, read_utf32_char (parser));
@@ -218,14 +218,14 @@ static void check_version (uint8_t patch, uint8_t min, uint8_t maj)
     pvm_assert (patch < 10, "Invalid patch version\n");
 }
 
-static Function **read_functions (Parser *parser, Pool *pool, uint32_t len)
+static Function** read_functions (Parser* parser, Pool* pool, uint32_t len)
 {
     if (len == 0)
     {
-        return calloc (0, sizeof (Function *));
+        return calloc (0, sizeof (Function*));
     }
 
-    Function **result = malloc (sizeof (Function *) * len);
+    Function** result = malloc (sizeof (Function*) * len);
     for (uint32_t i = 0; i < len; i++)
     {
         result[i] = read_function (parser, pool);
@@ -234,10 +234,10 @@ static Function **read_functions (Parser *parser, Pool *pool, uint32_t len)
     return result;
 }
 
-static Function *read_function (Parser *parser, Pool *pool)
+static Function* read_function (Parser* parser, Pool* pool)
 {
     char fmt[] = "Undefined constant pool entry 0x%02X";
-    char *out;
+    char* out;
 
     uint32_t sig = read_u32 (parser);
     asprintf (&out, fmt, sig);
@@ -248,31 +248,31 @@ static Function *read_function (Parser *parser, Pool *pool)
     pvm_assert (pool_has_entry (pool, name), out);
 
     uint32_t code_len  = read_u32 (parser);
-    Instruction **body = read_function_body (parser, code_len);
+    Instruction** body = read_function_body (parser, code_len);
 
-    Function *f       = function_new (body, code_len, name, sig, 0, NULL);
-    StackEmulator *se = stack_emulator_new (body, code_len);
+    Function* f       = function_new (body, code_len, name, sig, 0, NULL);
+    StackEmulator* se = stack_emulator_new (body, code_len);
     stack_emulator_emulate (se);
     return f;
 }
 
-static Instruction **read_function_body (Parser *parser, uint32_t code_len)
+static Instruction** read_function_body (Parser* parser, uint32_t code_len)
 {
-    Instruction **result = calloc (code_len, sizeof (Instruction *));
+    Instruction** result = calloc (code_len, sizeof (Instruction*));
     uint32_t count       = 0;
     for (uint32_t i = 0; i < code_len; i++)
     {
-        Instruction *i = read_instruction (parser);
+        Instruction* i = read_instruction (parser);
         if (i != NULL)
         {
             result[count++] = i;
         }
     }
 
-    return realloc (result, sizeof (Instruction *) * count);
+    return realloc (result, sizeof (Instruction*) * count);
 }
 
-static Instruction *read_instruction (Parser *parser)
+static Instruction* read_instruction (Parser* parser)
 {
     uint8_t opcode = read_u8 (parser);
     printf ("Instruction: %d\n", opcode);
@@ -285,6 +285,7 @@ static Instruction *read_instruction (Parser *parser)
             return NULL;
         }
 
+        case OP_IADD:
         case OP_ICONST_1:
         case OP_ICONST_0:
         {
@@ -293,7 +294,8 @@ static Instruction *read_instruction (Parser *parser)
 
         case OP_IPUSH:
         {
-            int32_t args[] = {read_i32 (parser)};
+            int32_t* args = checked_malloc (sizeof (int32_t));
+            args[0]       = read_i32 (parser);
             return instruction_new (opcode, args, 1);
         }
 
@@ -306,7 +308,7 @@ static Instruction *read_instruction (Parser *parser)
     return NULL;
 }
 
-static void check_header (Header *header)
+static void check_header (Header* header)
 {
     check_version (header->patch, header->minor, header->major);
     pvm_assert (
@@ -318,52 +320,52 @@ static void check_header (Header *header)
                 "Invalid compiler vendor string");
 }
 
-static inline bool is_next_i8 (Parser *parser, int8_t u)
+static inline bool is_next_i8 (Parser* parser, int8_t u)
 {
     return scanner_look_i8 (parser->scanner) == u;
 }
 
-static inline bool is_next_u8 (Parser *parser, uint8_t u)
+static inline bool is_next_u8 (Parser* parser, uint8_t u)
 {
     return scanner_look_u8 (parser->scanner) == u;
 }
 
-static inline int8_t read_i8 (Parser *parser)
+static inline int8_t read_i8 (Parser* parser)
 {
     return scanner_next_i8 (parser->scanner);
 }
 
-static inline int16_t read_i16 (Parser *parser)
+static inline int16_t read_i16 (Parser* parser)
 {
     return scanner_next_i16 (parser->scanner);
 }
 
-static inline int32_t read_i32 (Parser *parser)
+static inline int32_t read_i32 (Parser* parser)
 {
     return scanner_next_i32 (parser->scanner);
 }
 
-static inline int64_t read_i64 (Parser *parser)
+static inline int64_t read_i64 (Parser* parser)
 {
     return scanner_next_i64 (parser->scanner);
 }
 
-static inline uint8_t read_u8 (Parser *parser)
+static inline uint8_t read_u8 (Parser* parser)
 {
     return scanner_next_u8 (parser->scanner);
 }
 
-static inline uint16_t read_u16 (Parser *parser)
+static inline uint16_t read_u16 (Parser* parser)
 {
     return scanner_next_u16 (parser->scanner);
 }
 
-static inline uint32_t read_u32 (Parser *parser)
+static inline uint32_t read_u32 (Parser* parser)
 {
     return scanner_next_u32 (parser->scanner);
 }
 
-static inline uint64_t read_u64 (Parser *parser)
+static inline uint64_t read_u64 (Parser* parser)
 {
     return scanner_next_u64 (parser->scanner);
 }
