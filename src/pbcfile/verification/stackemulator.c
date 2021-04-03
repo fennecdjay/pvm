@@ -3,6 +3,7 @@
 #include "stackemulator.h"
 #include "utils/utils.h"
 #include "ir/opcode.h"
+#include "utils/stringbuilder.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +11,7 @@
 
 static bool instruction_emulate_stack (Instruction* i, StackEmulator* em);
 static void stack_push (StackEmulator* stack, StackEmulatorItemType item);
-static void print_stack (FILE* output, StackEmulator* se);
+static char* stack_to_string (StackEmulator* se);
 static int32_t stack_size_with_no_nones (StackEmulator* se);
 static StackEmulatorItemType stack_pop (StackEmulator* stack,
                                         Instruction* executor,
@@ -168,16 +169,20 @@ char* instruction_get_bytecode_string (Instruction* instr)
     return output;
 }
 
-static void print_stack (FILE* output, StackEmulator* se)
+static char* stack_to_string (StackEmulator* se)
 {
-    fprintf (output, "[");
+    StringBuilder* sb = str_builder_create ();
     for (uint32_t i = 0; i < se->stack_size; i++)
     {
-        fprintf (output, se->stack_size - i ? "%s" : "%s ",
-                 stack_emulator_item_type_to_string (se->stack[i], se));
+        char* output;
+        size_t len =
+            asprintf (&output, se->stack_size - i ? "%s" : "%s ",
+                      stack_emulator_item_type_to_string (se->stack[i], se));
+        str_builder_add_str (sb, output, len);
     }
 
-    fprintf (output, "]");
+    str_builder_add_char (sb, ']');
+    return str_builder_dump (sb, NULL);
 }
 
 static int32_t stack_size_with_no_nones (StackEmulator* se)
