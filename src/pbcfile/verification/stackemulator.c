@@ -27,17 +27,17 @@ char* stack_emulator_item_type_to_string (StackEmulatorItemType type,
     {
         case STACK_EMULATOR_ITEM_TYPE_NONE: return "<none>";
         case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_INT8: return "i8";
-        case STACK_EMULATOR_ITEM_TYPE_PRIMTIIVE_INT16: return "i16";
+        case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_INT16: return "i16";
         case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_INT32: return "i32";
         case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_INT64: return "i64";
         case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_UINT8: return "u8";
-        case STACK_EMULATOR_ITEM_TYPE_PRIMTIIVE_UINT16: return "u16";
+        case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_UINT16: return "u16";
         case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_UINT32: return "u32";
         case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_UINT64: return "u64";
         case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_FLOAT32: return "f32";
-        case STACK_EMULATOR_ITEM_TYPE_PRIMTIIVE_FLOAT64: return "f64";
-        case STACK_EMULATOR_ITEM_TYPE_PRIMTIIVE_BOOL: return "bool";
-        case STACK_EMULATOR_ITEM_TYPE_PRIMTIIVE_CHAR: return "char";
+        case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_FLOAT64: return "f64";
+        case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_BOOL: return "bool";
+        case STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_CHAR: return "char";
         case STACK_EMULATOR_ITEM_TYPE_NULLREF: return "nothing";
         case STACK_EMULATOR_ITEM_TYPE_OBJECTREF: return se->classname;
     }

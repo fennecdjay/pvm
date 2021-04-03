@@ -3,6 +3,7 @@ subdirs = [
     'ir',
     'pbcfile',
     'utils',
+    'interp',
 ]
 
 foreach subdir: subdirs
@@ -29,6 +30,9 @@ foreach src: encoding_sources
     libpvm_sources += 'encoding' / src
 endforeach
 
+foreach src: interpreter_sources
+    libpvm_sources += 'interp' / src
+endforeach
 
 libpvm_inst_headers = []
 
@@ -48,6 +52,9 @@ foreach header: encoding_inst_headers
     libpvm_inst_headers += 'encoding' / header
 endforeach
 
+foreach header: interpreter_inst_headers
+    libpvm_inst_headers += 'interp' / header
+endforeach
 
 libpvm_noinst_headers = []
 
@@ -67,8 +74,13 @@ foreach header: encoding_noinst_headers
     libpvm_noinst_headers += 'encoding' / header
 endforeach
 
+foreach header: interpreter_noinst_headers
+    libpvm_noinst_headers += 'interp' / header
+endforeach
+
 libpvm_deps = [
     dependency('icu-uc'),
+    dependency('libjit'),
 ]
 
 libpvm_headers = libpvm_noinst_headers + libpvm_inst_headers
@@ -110,6 +122,16 @@ foreach arg: test_cc_args
         global_cc_args += arg
     endif
 endforeach
+
+fsize = cc.sizeof('float')
+if fsize != 4
+    error('float must be 32 bits, it is currently @0@ bits'.format(fsize * 8))
+endif
+
+dsize = cc.sizeof('double')
+if dsize != 8
+    error('double must be 64 bits, it is currently @0@ bits'.format(dsize * 8))
+endif
 
 libpvm = shared_library(
     'pvm',
