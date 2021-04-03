@@ -6,6 +6,7 @@
 #define accept(p, b, msg) pvm_assert (read_u8 (p) == b, msg);
 
 #include "ir/code.h"
+#include "pbcfile/verification/stackemulator.h"
 #include "scanner.h"
 #include "encoding/utf8.h"
 #include "utils/utils.h"
@@ -20,10 +21,10 @@
 #include <uchar.h>
 #include <unicode/umachine.h>
 
-static int8_t *read_file (const char *fname, uint64_t *flen);
+static int8_t *read_file (const char *fname, uint32_t *flen);
 static Pool *build_pool (Parser *parser);
 static Header *build_header (Parser *parser);
-static char *read_n_bytes (Parser *parser, uint64_t n);
+static char *read_n_bytes (Parser *parser, uint32_t n);
 static char *read_utf32_char (Parser *parser);
 static char *read_n_utf32_chars (Parser *parser, uint32_t n);
 static Function **read_functions (Parser *parser, Pool *pool, uint32_t count);
@@ -77,11 +78,11 @@ void parser_free (Parser *parser)
     free (parser);
 }
 
-static int8_t *read_file (const char *fname, uint64_t *flen)
+static int8_t *read_file (const char *fname, uint32_t *flen)
 {
     FILE *fileptr;
     int8_t *buffer;
-    uint64_t len;
+    uint32_t len;
 
     fileptr = fopen (fname, "rb");
     if (fileptr == NULL)
@@ -156,7 +157,7 @@ static Header *build_header (Parser *parser)
     char *vendor        = NULL;
     if (hasvendor)
     {
-        uint16_t vendor_len = read_u16 (parser);
+        uint32_t vendor_len = read_u16 (parser);
         vendor              = read_n_bytes (parser, vendor_len);
     }
 
@@ -166,10 +167,10 @@ static Header *build_header (Parser *parser)
     return header;
 }
 
-static char *read_n_bytes (Parser *parser, uint64_t n)
+static char *read_n_bytes (Parser *parser, uint32_t n)
 {
     char *s = checked_malloc (sizeof (char) * (n + 1));
-    for (uint64_t i = 0; i < n; i++)
+    for (uint32_t i = 0; i < n; i++)
     {
         s[i] = read_u8 (parser);
     }
@@ -249,7 +250,10 @@ static Function *read_function (Parser *parser, Pool *pool)
     uint32_t code_len  = read_u32 (parser);
     Instruction **body = read_function_body (parser, code_len);
 
-    return function_new (body, code_len, name, sig, 0, NULL);
+    Function *f       = function_new (body, code_len, name, sig, 0, NULL);
+    StackEmulator *se = stack_emulator_new (body, code_len);
+    stack_emulator_emulate (se);
+    return f;
 }
 
 static Instruction **read_function_body (Parser *parser, uint32_t code_len)
@@ -265,7 +269,7 @@ static Instruction **read_function_body (Parser *parser, uint32_t code_len)
         }
     }
 
-    return realloc (result, sizeof (Instruction*) * count);
+    return realloc (result, sizeof (Instruction *) * count);
 }
 
 static Instruction *read_instruction (Parser *parser)

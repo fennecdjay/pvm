@@ -17,7 +17,7 @@ struct _Parser
 {
     const char* input_filename;
     int8_t* input;
-    uint64_t input_len;
+    uint32_t input_len;
     Scanner* scanner;
 };
 

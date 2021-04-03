@@ -9,4 +9,5 @@ pbcfile_inst_headers = [
 pbcfile_sources = [
     'parser.c',
     'scanner.c',
+    'verification/stackemulator.c',
 ]
