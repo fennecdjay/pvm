@@ -53,7 +53,7 @@ int16_t scanner_look_i16 (Scanner* scanner)
     };
 
     memcpy (&result, next2, sizeof (int8_t) * 2);
-#if LILENDIAN
+#if IS_LIL_ENDIAN_UWU
     return swap_i16 (result);
 #else
     return result;
@@ -71,7 +71,7 @@ int16_t scanner_next_i16 (Scanner* scanner)
 
     memcpy (&result, next2, sizeof (int8_t) * 2);
 
-#if LILENDIAN
+#if IS_LIL_ENDIAN_UWU
     return swap_i16 (result);
 #else
     return result;
@@ -91,7 +91,7 @@ int32_t scanner_look_i32 (Scanner* scanner)
 
     memcpy (&result, next4, sizeof (int8_t) * 4);
 
-#if LILENDIAN
+#if IS_LIL_ENDIAN_UWU
     return swap_i32 (result);
 #else
     return result;
@@ -111,7 +111,7 @@ int32_t scanner_next_i32 (Scanner* scanner)
 
     memcpy (&result, next4, sizeof (int8_t) * 4);
 
-#if LILENDIAN
+#if IS_LIL_ENDIAN_UWU
     return swap_i32 (result);
 #else
     return result;
@@ -131,7 +131,7 @@ int64_t scanner_look_i64 (Scanner* scanner)
 
     memcpy (&result, next8, sizeof (int8_t) * 8);
 
-#if LILENDIAN
+#if IS_LIL_ENDIAN_UWU
     return swap_i64 (result);
 #else
     return result;
@@ -151,7 +151,7 @@ int64_t scanner_next_i64 (Scanner* scanner)
 
     memcpy (&result, next8, sizeof (int8_t) * 8);
 
-#if LILENDIAN
+#if IS_LIL_ENDIAN_UWU
     return swap_i64 (result);
 #else
     return result;
