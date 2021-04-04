@@ -4,7 +4,7 @@
 #define __PVM_PRIMVALUE_H__
 #include <inttypes.h>
 #include <stdbool.h>
-#include <unicode/umachine.h>
+#include "encoding/utf8.h"
 
 typedef struct _PrimitiveValue PrimitiveValue;
 typedef enum
@@ -22,6 +22,29 @@ typedef enum
     PVM_PRIMTIVE_TYPE_BOOL,
     PVM_PRIMTIVE_TYPE_CHAR,
 } PrimitiveValueKind;
+
+struct _PrimitiveValue
+{
+    PrimitiveValueKind _kind;
+    union
+    {
+        int8_t i8;
+        int16_t i16;
+        int32_t i32;
+        int64_t i64;
+
+        uint8_t u8;
+        uint16_t u16;
+        uint32_t u32;
+        uint64_t u64;
+
+        float f32;
+        double f64;
+
+        bool b;
+        pchar c;
+    } value;
+};
 
 PrimitiveValue* primitive_value_new_i8 (int8_t value);
 PrimitiveValue* primitive_value_new_i16 (int16_t value);

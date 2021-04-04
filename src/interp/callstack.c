@@ -19,6 +19,7 @@ CallStack* call_stack_new ()
     stack->capacity  = 10;
     stack->frames    = checked_malloc (sizeof (StackFrame) * 10);
     stack->size      = 0;
+    stack->top       = NULL;
     return stack;
 }
 

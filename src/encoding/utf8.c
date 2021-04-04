@@ -20,7 +20,10 @@ char* encode_utf8char (pchar c, uint32_t* len)
     {
         pvm_panicf ("Invalid character in unicode data");
     }
-    *len = u_countChar32 (i, -1);
+    if (len != NULL)
+    {
+        *len = u_countChar32 (i, -1);
+    }
 
     // Then convert to UTF-8
     char* dest = checked_malloc (sizeof (char) * 4);

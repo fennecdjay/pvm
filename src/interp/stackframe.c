@@ -21,7 +21,7 @@ uint32_t stack_frame_get_depth (StackFrame* frame)
 
 void stack_frame_execute (StackFrame* f, Interpreter* interp)
 {
-    interp_run_function (f->func);
+    interp_run_function (interp, f->func);
 }
 
 void stack_frame_free (StackFrame* frame)

@@ -34,8 +34,16 @@ PrimitiveValue* stack_pop (Stack* stack)
 
     PrimitiveValue* result = stack->top;
     stack->stack_size--;
-    primitive_value_free (stack->values[stack->stack_size]);
-    stack->top = stack->values[stack->stack_size - 1];
+
+    if (stack->stack_size != 0)
+    {
+        stack->top = stack->values[stack->stack_size - 1];
+    }
+    else
+    {
+        stack->top = NULL;
+    }
+
     return result;
 }
 
@@ -111,7 +119,7 @@ void stack_free (Stack* stack)
 {
     return_if_null (stack);
     primitive_value_free (stack->top);
-    for (uint32_t i = 0; i < stack->stack_size; i++)
+    for (uint32_t i = 0; i < stack->stack_size - 1; i++)
     {
         primitive_value_free (stack->values[i]);
     }
