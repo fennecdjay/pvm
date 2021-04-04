@@ -167,12 +167,17 @@ static char* primitive_value_to_string (PrimitiveValue* val)
 static void print_stack (Stack* stack)
 {
     printf ("[");
+    char* str;
     for (uint32_t i = 0; i < stack->stack_size - 1; i++)
     {
-        printf ("%s ", primitive_value_to_string (stack->values[i]));
+        str = primitive_value_to_string (stack->values[i]);
+        printf ("%s ", str);
+        free (str);
     }
 
-    printf ("%s", primitive_value_to_string (stack->top));
+    str = primitive_value_to_string (stack->top);
+    printf ("%s", str);
+    free (str);
     printf ("]\n");
 }
 

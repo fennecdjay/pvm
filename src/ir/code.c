@@ -42,7 +42,7 @@ Header* header_new (int major, int minor, int patch, char* sourcename,
     return h;
 }
 
-const char* header_to_string (Header* header)
+char* header_to_string (Header* header)
 {
     char* c;
     asprintf (&c,

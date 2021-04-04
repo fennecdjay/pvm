@@ -32,7 +32,7 @@ struct _Header
 
 Header* header_new (int major, int minor, int patch, char* sourcename,
                     char* vendor);
-const char* header_to_string (Header* header);
+char* header_to_string (Header* header);
 void header_free (Header* header);
 
 #endif /* __PVM_CODE_H */

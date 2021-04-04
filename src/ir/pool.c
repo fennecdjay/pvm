@@ -70,7 +70,7 @@ bool pool_has_entry (Pool* pool, uint32_t idx)
     return pool->entries_count > idx;
 }
 
-const char* pool_entry_to_string (PoolEntry* entry)
+char* pool_entry_to_string (PoolEntry* entry)
 {
     char* begin;
     asprintf (&begin, "Entry[type=%d ", entry->type);
@@ -92,6 +92,8 @@ const char* pool_entry_to_string (PoolEntry* entry)
 
     char* result;
     asprintf (&result, "%s%s", begin, end);
+    free (begin);
+    free (end);
     return result;
 }
 

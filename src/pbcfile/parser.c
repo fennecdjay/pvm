@@ -122,7 +122,9 @@ static Pool* build_pool (Parser* parser)
         }
 
         pool_add_entry (pool, e);
-        printf ("%s\n", pool_entry_to_string (e));
+        char* txt = pool_entry_to_string (e);
+        printf ("Entry: %s\n", txt);
+        free (txt);
     }
 
     return pool;
@@ -147,7 +149,9 @@ static Header* build_header (Parser* parser)
 
     Header* header = header_new (major, minor, patch, srcname, vendor);
     check_header (header);
-    printf ("%s\n", header_to_string (header));
+    char* txt = header_to_string (header);
+    printf ("Header: %s\n", txt);
+    free (txt);
     return header;
 }
 
@@ -226,6 +230,7 @@ static Function* read_function (Parser* parser, Pool* pool)
     uint32_t sig = read_u32 (parser);
     asprintf (&out, fmt, sig);
     pvm_assert (pool_has_entry (pool, sig), out);
+    free (out);
 
     uint32_t name = read_u32 (parser);
     asprintf (&out, fmt, name);
@@ -237,7 +242,8 @@ static Function* read_function (Parser* parser, Pool* pool)
     Function* f       = function_new (body, code_len, name, sig, 0, NULL);
     StackEmulator* se = stack_emulator_new (body, code_len);
     stack_emulator_emulate (se);
-    
+    stack_emulator_free (se);
+    free (out);
     return f;
 }
 

@@ -72,8 +72,8 @@ void stack_emulator_emulate (StackEmulator* e)
 void stack_emulator_free (StackEmulator* e)
 {
     return_if_null (e);
-    free (e->input);
     free (e->classname);
+    free (e->stack);
     free (e);
 }
 
