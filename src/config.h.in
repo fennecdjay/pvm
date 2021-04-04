@@ -1,1 +1,2 @@
 #define IS_LIL_ENDIAN_UWU @is_lil_endian_uwu@
+#define DEFAULT_INTERP_ENV "@default_pbcpath@"

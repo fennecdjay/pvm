@@ -21,7 +21,6 @@
 #include <uchar.h>
 #include <unicode/umachine.h>
 
-static int8_t* read_file (const char* fname, uint32_t* flen);
 static Pool* build_pool (Parser* parser);
 static Header* build_header (Parser* parser);
 static char* read_n_bytes (Parser* parser, uint32_t n);
@@ -54,7 +53,13 @@ Parser* parser_new (const char* input_filename)
     Parser* p         = checked_malloc (sizeof (Parser));
     p->input_filename = input_filename;
     p->input          = read_file (input_filename, &p->input_len);
-    p->scanner        = scanner_new (input_filename, p->input, p->input_len);
+    if (p->input == NULL)
+    {
+        pvm_panicf ("Could not read file %s: Error: %s (errno %d)",
+                    p->input_filename, strerror (errno), errno);
+    }
+
+    p->scanner = scanner_new (input_filename, p->input, p->input_len);
     return p;
 }
 
@@ -76,29 +81,6 @@ void parser_free (Parser* parser)
     free (parser->input);
     scanner_free (parser->scanner);
     free (parser);
-}
-
-static int8_t* read_file (const char* fname, uint32_t* flen)
-{
-    FILE* fileptr;
-    int8_t* buffer;
-    uint32_t len;
-
-    fileptr = fopen (fname, "rb");
-    if (fileptr == NULL)
-    {
-        pvm_panicf ("%s: %s (errno %d)", fname, strerror (errno), errno);
-    }
-
-    fseek (fileptr, 0, SEEK_END);
-    len = ftell (fileptr);
-    rewind (fileptr);
-
-    buffer = (int8_t*) checked_malloc (len * sizeof (int8_t));
-    fread (buffer, len, 1, fileptr);
-    fclose (fileptr);
-    *flen = len;
-    return buffer;
 }
 
 static Pool* build_pool (Parser* parser)

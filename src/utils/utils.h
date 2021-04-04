@@ -22,6 +22,7 @@
 
 int vasprintf (char** strp, const char* fmt, va_list ap);
 int asprintf (char** strp, const char* fmt, ...);
+int8_t* read_file (const char* fname, uint32_t* flen);
 void pvm_panicf (const char* msg, ...);
 char* byte_array_to_string (int8_t* arr, uint32_t len);
 char* ubyte_array_to_string (uint8_t* arr, uint32_t len);

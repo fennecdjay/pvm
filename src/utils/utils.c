@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <errno.h>
 
 #define insane_free(ptr) \
     {                    \
@@ -44,6 +45,30 @@ int vasprintf (char** strp, const char* fmt, va_list ap)
     va_end (ap2);
 
     return (r);
+}
+
+int8_t* read_file (const char* fname, uint32_t* flen)
+{
+    FILE* fileptr;
+    int8_t* buffer;
+    uint32_t len;
+
+    fileptr = fopen (fname, "rb");
+    if (fileptr == NULL)
+    {
+        *flen = 0;
+        return NULL;
+    }
+
+    fseek (fileptr, 0, SEEK_END);
+    len = ftell (fileptr);
+    rewind (fileptr);
+
+    buffer = (int8_t*) checked_malloc (len * sizeof (int8_t));
+    fread (buffer, len, 1, fileptr);
+    fclose (fileptr);
+    *flen = len;
+    return buffer;
 }
 
 void* checked_malloc (size_t size)

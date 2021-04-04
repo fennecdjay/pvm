@@ -13,7 +13,7 @@ typedef struct _PoolEntry PoolEntry;
 
 typedef enum
 {
-    PVM_POOL_ENTRY_TYPE_UTF8,
+    PVM_POOL_ENTRY_TYPE_UTF32,
     PVM_POOL_ENTRY_TYPE_LONG,
 } EntryType;
 

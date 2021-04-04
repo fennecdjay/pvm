@@ -59,7 +59,7 @@ PoolEntry* pool_entry_new_long (uint64_t l)
 
 PoolEntry* pool_entry_new_utf32 (char* str, uint32_t len)
 {
-    PoolEntry* entry = pool_entry_new (PVM_POOL_ENTRY_TYPE_UTF8);
+    PoolEntry* entry = pool_entry_new (PVM_POOL_ENTRY_TYPE_UTF32);
     entry->value.str = str;
     entry->len       = len;
     return entry;
@@ -77,7 +77,7 @@ const char* pool_entry_to_string (PoolEntry* entry)
     char* end;
     switch (entry->type)
     {
-        case PVM_POOL_ENTRY_TYPE_UTF8:
+        case PVM_POOL_ENTRY_TYPE_UTF32:
         {
             asprintf (&end, "value='%s']", entry->value.str);
             break;
@@ -99,7 +99,7 @@ void pool_entry_free (PoolEntry* entry)
 {
     switch (entry->type)
     {
-        case PVM_POOL_ENTRY_TYPE_UTF8:
+        case PVM_POOL_ENTRY_TYPE_UTF32:
         {
             free (entry->value.str);
         }
