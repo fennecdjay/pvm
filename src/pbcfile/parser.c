@@ -102,6 +102,7 @@ static Pool* build_pool (Parser* parser)
         pvm_assert (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF32 ||
                         type == PVM_PARSER_POOL_ENTRY_TYPE_LONG,
                     errmsg);
+        free (errmsg);
 
         if (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF32)
         {
@@ -115,6 +116,7 @@ static Pool* build_pool (Parser* parser)
                       "Invalid constant pool entry length 0x%04X for type long",
                       len);
             pvm_assert (len == 8, len_err_msg);
+            free (len_err_msg);
             int64_t data = read_i64 (parser);
             e            = pool_entry_new_long (data);
         }
@@ -235,6 +237,7 @@ static Function* read_function (Parser* parser, Pool* pool)
     Function* f       = function_new (body, code_len, name, sig, 0, NULL);
     StackEmulator* se = stack_emulator_new (body, code_len);
     stack_emulator_emulate (se);
+    
     return f;
 }
 

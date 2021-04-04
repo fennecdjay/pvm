@@ -27,5 +27,6 @@ const char* instruction_disassemble (Instruction* instruction)
 void instruction_free (Instruction* instruction)
 {
     return_if_null (instruction);
+    free (instruction->args);
     free (instruction);
 }
