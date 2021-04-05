@@ -109,6 +109,29 @@ void pvm_panicf (const char* msg, ...)
     exit (1);
 }
 
+char* str_repeat (char* str, uint32_t times)
+{
+    if (times < 1) return NULL;
+    char* result;
+    size_t str_len = strlen (str);
+    result         = checked_calloc (str_len + 1 * times, sizeof (char));
+
+    while (times--)
+    {
+        strcat (result, str);
+    }
+
+    return result;
+}
+
+char* char_to_string (char c)
+{
+    char* r = checked_malloc (sizeof (char) * 2);
+    r[0]    = c;
+    r[1]    = 0;
+    return r;
+}
+
 char* byte_array_to_string (int8_t* arr, uint32_t len)
 {
     char* result = checked_malloc (sizeof (arr));

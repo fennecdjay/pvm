@@ -122,75 +122,75 @@ static char* primitive_value_to_string (PrimitiveValue* val)
     char* value = NULL;
     switch (val->_kind)
     {
-        case PVM_PRIMTIVE_TYPE_INT16:
+        case PVM_PRIMITIVE_TYPE_INT16:
         {
             asprintf (&value, "%d", val->value.i16);
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_INT32:
+        case PVM_PRIMITIVE_TYPE_INT32:
         {
             asprintf (&value, "%d", val->value.i32);
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_UINT8:
+        case PVM_PRIMITIVE_TYPE_UINT8:
         {
             asprintf (&value, "%d", val->value.u8);
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_UINT16:
+        case PVM_PRIMITIVE_TYPE_UINT16:
         {
             asprintf (&value, "%d", val->value.u16);
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_UINT32:
+        case PVM_PRIMITIVE_TYPE_UINT32:
         {
             asprintf (&value, "%d", val->value.u32);
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_INT8:
+        case PVM_PRIMITIVE_TYPE_INT8:
         {
             asprintf (&value, "%d", val->value.i8);
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_INT64:
+        case PVM_PRIMITIVE_TYPE_INT64:
         {
             asprintf (&value, "%li", val->value.i64);
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_UINT64:
+        case PVM_PRIMITIVE_TYPE_UINT64:
         {
             asprintf (&value, "%lu", val->value.u64);
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_FLOAT32:
+        case PVM_PRIMITIVE_TYPE_FLOAT32:
         {
             asprintf (&value, "%f", val->value.f32);
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_FLOAT64:
+        case PVM_PRIMITIVE_TYPE_FLOAT64:
         {
             asprintf (&value, "%lf", val->value.f64);
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_BOOL:
+        case PVM_PRIMITIVE_TYPE_BOOL:
         {
             asprintf (&value, "%s", val->value.b ? "yes" : "no");
             break;
         }
 
-        case PVM_PRIMTIVE_TYPE_CHAR:
+        case PVM_PRIMITIVE_TYPE_CHAR:
         {
-            asprintf (&value, "%s", encode_utf8char (val->value.c, NULL));
+            asprintf (&value, "%s", encode_utf32char (val->value.c, NULL));
             break;
         }
     }

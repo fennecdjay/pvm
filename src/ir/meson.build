@@ -7,6 +7,7 @@ ir_inst_headers = [
     'opcode.h',
     'pool.h',
     'sourceloctable.h',
+    'type.h',
 ]
 
 ir_sources = [
@@ -16,4 +17,5 @@ ir_sources = [
     'opcode.c',
     'pool.c',
     'sourceloctable.c',
+    'type.c',
 ]

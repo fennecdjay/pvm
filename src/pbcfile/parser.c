@@ -171,7 +171,7 @@ static char* read_utf32_char (Parser* parser)
 {
     char* result = checked_malloc (sizeof (char) * 4);
     uint32_t len;
-    result = encode_utf8char (read_i32 (parser), &len);
+    result = encode_utf32char (read_i32 (parser), &len);
     return result;
 }
 

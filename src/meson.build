@@ -95,6 +95,7 @@ test_cc_args = [
   '-Wno-switch',
   '-Wno-pedantic',
   '-Wno-unused-but-set-variable',
+  '-Wno-sign-compare',
   '-g',
 ]
 

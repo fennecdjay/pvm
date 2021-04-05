@@ -7,7 +7,9 @@
 typedef UChar32 pchar;
 typedef pchar* pstring;
 
-char* encode_utf8str (pstring str, uint64_t str_len);
-char* encode_utf8char (pchar c, uint32_t* len);
+char* encode_utf32str (pstring str, uint32_t* len);
+char* encode_utf32char (pchar c, uint32_t* len);
+pchar decode_utf8char (char c);
+pstring decode_utf8str (char* str, uint32_t* len);
 
 #endif

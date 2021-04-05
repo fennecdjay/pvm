@@ -10,7 +10,7 @@
 #include <string.h>
 #include "utils/utils.h"
 
-char* encode_utf8char (pchar c, uint32_t* len)
+char* encode_utf32char (pchar c, uint32_t* len)
 {
     // First, convert to UTF-16
     UChar i[8]   = {0};
@@ -32,18 +32,75 @@ char* encode_utf8char (pchar c, uint32_t* len)
     return dest;
 }
 
-char* encode_utf8str (pstring str, uint64_t str_len)
+char* encode_utf32str (pstring str, uint32_t* len)
 {
-    char* result  = checked_malloc (sizeof (char) * str_len * 4);
+    int32_t utf16len;
+    UErrorCode e = U_ZERO_ERROR;
+    u_strFromUTF32 (NULL, 0, &utf16len, str, -1, &e);
+    if (e == U_INVALID_CHAR_FOUND)
+    {
+        pvm_panicf ("Invalid character in unicode data");
+    }
+
+    char* result  = checked_calloc (utf16len * 4, sizeof (char));
     int32_t count = 0;
 
-    for (uint64_t i = 0; i < str_len; i++)
+    for (uint32_t i = 0; i < utf16len; i++)
     {
         char* ch;
         uint32_t len;
-        ch = encode_utf8char (str[i], &len);
-        memcpy (result, ch, count * sizeof (char));
+        ch = encode_utf32char (str[i], &len);
+        strcat (result, ch);
         count += len;
+    }
+
+    if (len != NULL)
+    {
+        *len = utf16len;
+    }
+    return result;
+}
+
+pchar decode_utf8char (char c)
+{
+    UErrorCode e = U_ZERO_ERROR;
+    UChar utf16[1];
+    u_strFromUTF8 (utf16, 1, NULL, char_to_string (c), 1, &e);
+    if (e == U_INVALID_CHAR_FOUND)
+    {
+        pvm_panicf ("Invalid character in unicode data");
+    }
+
+    pchar result[1];
+    u_strToUTF32 (result, 1, NULL, utf16, 1, &e);
+    if (e == U_INVALID_CHAR_FOUND)
+    {
+        pvm_panicf ("Invalid character in unicode data");
+    }
+
+    return result[0];
+}
+
+pstring decode_utf8str (char* str, uint32_t* len)
+{
+    size_t str_len = strlen (str);
+    if (str_len == 0)
+    {
+        return L"";
+    }
+
+    pstring result = checked_calloc (str_len + 1, sizeof (pchar));
+    uint32_t i;
+    for (i = 0; i < str_len; i++)
+    {
+        pchar ch = decode_utf8char (str[i]);
+        ;
+        result[i] = ch;
+    }
+
+    if (len != NULL)
+    {
+        *len = str_len;
     }
 
     return result;
