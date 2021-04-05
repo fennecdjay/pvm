@@ -124,7 +124,6 @@ Type* type_parse (char* str)
     }
     else if (str[0] == '&')
     {
-        StringBuilder* value = str_builder_create ();
         uint32_t i;
         for (i = 1; i < len; i++)
         {
@@ -132,8 +131,6 @@ Type* type_parse (char* str)
             {
                 break;
             }
-
-            str_builder_add_str (value, char_to_string (str[i]), 0);
         }
 
         pvm_assert (str[i - 1] != '/', "Unexpected end of type path");

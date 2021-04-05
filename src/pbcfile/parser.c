@@ -12,6 +12,7 @@
 #include "utils/utils.h"
 #include "parser.h"
 #include "ir/pool.h"
+#include "ir/type.h"
 #include "utils/common.h"
 #include <stdint.h>
 #include <stdlib.h>
@@ -230,6 +231,7 @@ static Function* read_function (Parser* parser, Pool* pool)
     uint32_t sig = read_u32 (parser);
     asprintf (&out, fmt, sig);
     pvm_assert (pool_has_entry (pool, sig), out);
+    type_free (type_parse (pool->entries[sig]->value.str));
     free (out);
 
     uint32_t name = read_u32 (parser);
