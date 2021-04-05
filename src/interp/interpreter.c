@@ -1,5 +1,6 @@
 // interpreter.c: opcode execution
 // license information in LICENSE
+#define prim_copied(value) value->copy = true;
 #include "interpreter.h"
 #include "callstack.h"
 #include "stackframe.h"
@@ -21,25 +22,39 @@ struct _Interpreter
 {
     StackFrame* current_frame;
     CallStack* cs;
+    Pool* datapool;
 };
 
-Interpreter* interp_new ()
+Interpreter* interp_new (Pool* pool)
 {
     Interpreter* i   = checked_malloc (sizeof (Interpreter));
     i->cs            = call_stack_new ();
     i->current_frame = NULL;
+    i->datapool      = pool;
     return i;
 }
 
 void interp_run_function (Interpreter* interp, Function* func)
 {
+    char* name          = interp->datapool->entries[func->name_ref]->value.str;
     Stack* locals_stack = stack_new ();
+    interp->current_frame = stack_frame_new (func);
+    call_stack_push (interp->cs, interp->current_frame);
+    uint32_t depth = call_stack_get_size (interp->cs);
+    printf (
+        "Interpreter: Entering stack frame at %p for function %s, depth %d\n",
+        interp->current_frame, name, depth);
+
     for (uint32_t i = 0; i < func->instructions_len; i++)
     {
         interpreter_execute_instruction (interp, func->instructions[i],
                                          locals_stack);
     }
 
+    printf (
+        "Interpreter: Exited stack frame at %p for function %s, depth: %d\n",
+        interp->current_frame, name, depth - 1);
+    call_stack_pop (interp->cs);
     stack_free (locals_stack);
 }
 
@@ -68,6 +83,25 @@ static void interpreter_execute_instruction (Interpreter* interp,
         case OP_ICONST_1:
         {
             stack_push (stack, primitive_value_new_i32 (1));
+            break;
+        }
+
+        case OP_DUP:
+        {
+            PrimitiveValue* value = stack_peek (stack);
+            prim_copied (value);
+            stack_push (stack, value);
+            break;
+        }
+
+        case OP_SWAP:
+        {
+            PrimitiveValue* v1 = stack_pop (stack);
+            PrimitiveValue* v2 = stack_pop (stack);
+            prim_copied (v1);
+            prim_copied (v2);
+            stack_push (stack, v1);
+            stack_push (stack, v2);
             break;
         }
 

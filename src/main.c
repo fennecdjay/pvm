@@ -28,7 +28,7 @@ int main (int argc, char** argv)
 
     pvm_assert (main_func != NULL, "No main function found");
 
-    Interpreter* i = interp_new ();
+    Interpreter* i = interp_new (c->pool);
     interp_run_function (i, main_func);
 
     interp_free (i);

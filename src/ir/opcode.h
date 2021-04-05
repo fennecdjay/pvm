@@ -11,6 +11,8 @@ typedef enum
     OP_ICONST_1 = 0x02,
     OP_ICONST_0 = 0x03,
     OP_IADD     = 0x04,
+    OP_DUP      = 0x05,
+    OP_SWAP     = 0x06,
 } OpCode;
 
 const char* op_code_to_string (OpCode code);

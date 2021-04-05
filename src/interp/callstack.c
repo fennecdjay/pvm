@@ -4,6 +4,7 @@
 #include "utils/utils.h"
 #include <inttypes.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct _CallStack
 {
@@ -26,9 +27,14 @@ CallStack* call_stack_new ()
 StackFrame* call_stack_pop (CallStack* stack)
 {
     pvm_assert (stack->size != 0, "Cannot pop from empty stack!");
-    StackFrame* item = stack->top;
+    StackFrame* item = checked_malloc (sizeof (StackFrame));
+    item             = stack->top;
     stack->size--;
-    stack->top = stack->frames[stack->size - 1];
+    if (stack->size > 1)
+    {
+        stack->top = stack->frames[stack->size - 1];
+    }
+
     return item;
 }
 
@@ -42,6 +48,11 @@ void call_stack_push (CallStack* stack, StackFrame* frame)
 
     stack->size++;
     stack->frames[stack->size - 1] = frame;
+}
+
+uint32_t call_stack_get_size (CallStack* stack)
+{
+    return stack->size;
 }
 
 void call_stack_free (CallStack* stack)

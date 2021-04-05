@@ -19,6 +19,7 @@ Stack* stack_new ();
 void stack_push (Stack* stack, PrimitiveValue* value);
 PrimitiveValue* stack_pop (Stack* stack);
 PrimitiveValue* stack_at (Stack* stack, uint32_t i);
+PrimitiveValue* stack_peek (Stack* stack);
 PrimitiveValue** stack_pop_n (Stack* stack, uint32_t n);
 PrimitiveValue* stack_replace (Stack* stack, uint32_t n, PrimitiveValue* value);
 void stack_swap (Stack* stack);

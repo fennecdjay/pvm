@@ -266,8 +266,6 @@ static Instruction** read_function_body (Parser* parser, uint32_t code_len)
 static Instruction* read_instruction (Parser* parser)
 {
     uint8_t opcode = read_u8 (parser);
-    printf ("Instruction: %d\n", opcode);
-
     switch (opcode)
     {
         // Does nothing.
@@ -279,6 +277,8 @@ static Instruction* read_instruction (Parser* parser)
         case OP_IADD:
         case OP_ICONST_1:
         case OP_ICONST_0:
+        case OP_DUP:
+        case OP_SWAP:
         {
             return instruction_new (opcode, NULL, 0);
         }

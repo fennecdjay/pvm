@@ -13,9 +13,13 @@ static bool instruction_emulate_stack (Instruction* i, StackEmulator* em);
 static void stack_push (StackEmulator* stack, StackEmulatorItemType item);
 static char* stack_to_string (StackEmulator* se);
 static int32_t stack_size_with_no_nones (StackEmulator* se);
+static StackEmulatorItemType stack_peek_any (StackEmulator* stack,
+                                             Instruction* executor);
 static StackEmulatorItemType stack_pop (StackEmulator* stack,
                                         Instruction* executor,
                                         StackEmulatorItemType type);
+static StackEmulatorItemType stack_pop_any (StackEmulator* stack,
+                                            Instruction* executor);
 static void fill_stack_with_none (StackEmulator* s, uint32_t start,
                                   uint32_t end);
 static void stack_emulator_error (const char* msg, ...);
@@ -132,6 +136,22 @@ static bool instruction_emulate_stack (Instruction* i, StackEmulator* se)
             return false;
         }
 
+        case OP_DUP:
+        {
+            StackEmulatorItemType t = stack_peek_any (se, i);
+            stack_push (se, t);
+            return true;
+        }
+
+        case OP_SWAP:
+        {
+            StackEmulatorItemType t1 = stack_pop_any (se, i);
+            StackEmulatorItemType t2 = stack_pop_any (se, i);
+            stack_push (se, t1);
+            stack_push (se, t2);
+            return true;
+        }
+
         case OP_ICONST_1:
         case OP_IPUSH:
         case OP_ICONST_0:
@@ -150,6 +170,34 @@ static bool instruction_emulate_stack (Instruction* i, StackEmulator* se)
     }
 
     return false;
+}
+
+static StackEmulatorItemType stack_pop_any (StackEmulator* stack,
+                                            Instruction* executor)
+{
+    if (stack->stack_size == 0)
+    {
+        stack_emulator_error (
+            "Opcode %s attempting to pop from empty stack!\nBytecode: %s",
+            op_code_to_string (executor->op),
+            instruction_get_bytecode_string (executor));
+    }
+
+    return stack->top_type;
+}
+
+static StackEmulatorItemType stack_peek_any (StackEmulator* stack,
+                                             Instruction* executor)
+{
+    if (stack->stack_size == 0)
+    {
+        stack_emulator_error (
+            "Opcode %s attempting to peek from empty stack!\nBytecode: %s",
+            op_code_to_string (executor->op),
+            instruction_get_bytecode_string (executor));
+    }
+
+    return stack->top_type;
 }
 
 char* instruction_get_bytecode_string (Instruction* instr)

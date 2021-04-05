@@ -81,6 +81,12 @@ PrimitiveValue* stack_at (Stack* stack, uint32_t n)
     return stack->values[n];
 }
 
+PrimitiveValue* stack_peek (Stack* stack)
+{
+    pvm_assert (stack->stack_size != 0, "cannot peek from empty stack");
+    return stack->top;
+}
+
 PrimitiveValue* stack_replace (Stack* stack, uint32_t n, PrimitiveValue* value)
 {
     PrimitiveValue* item = stack_at (stack, n);
@@ -118,10 +124,12 @@ void stack_rotate_n (Stack* stack, uint32_t n)
 void stack_free (Stack* stack)
 {
     return_if_null (stack);
-    primitive_value_free (stack->top);
-    for (uint32_t i = 0; i < stack->stack_size - 1; i++)
+    for (uint32_t i = 0; i < stack->stack_size; i++)
     {
-        primitive_value_free (stack->values[i]);
+        if (!stack->values[i]->copy)
+        {
+            primitive_value_free (stack->values[i]);
+        }
     }
 
     free (stack->values);
