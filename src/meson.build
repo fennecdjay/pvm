@@ -99,14 +99,7 @@ test_cc_args = [
   '-g',
 ]
 
-rt_paths = [
-    get_option('prefix') / get_option('datadir') / 'pvm' / 'rt',
-]
-
-sepchar = build_machine.system() == 'windows' ? ';' : ':'
-
 conf = configuration_data()
-conf.set('default_pbcpath', sepchar.join(rt_paths))
 conf.set('is_lil_endian_uwu', build_machine.endian() == 'little' ? 1 : 0)
 
 confh = configure_file(
