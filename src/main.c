@@ -5,6 +5,7 @@
 #include <string.h>
 #include "pbcfile/parser.h"
 #include "ir/code.h"
+#include "ir/type.h"
 #include "interp/interpreter.h"
 #include "utils/utils.h"
 #include "encoding/utf8.h"

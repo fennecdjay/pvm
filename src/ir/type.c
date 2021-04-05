@@ -2,6 +2,7 @@
 // license information in LICENSE
 #include "type.h"
 #include "utils/utils.h"
+#include "utils/stringbuilder.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -88,14 +89,14 @@ char* type_to_string (Type* type)
     {
         case TYPE_KIND_PRIMITIVE:
         {
-            asprintf (&out, "#%c",
+            asprintf (&out, "%c",
                       get_primitive_type_char (type->label.primitive));
             break;
         }
 
         case TYPE_KIND_REFERENCE:
         {
-            asprintf (&out, "&%s", encode_utf32str (type->label.refpath, NULL));
+            asprintf (&out, "%s", encode_utf32str (type->label.refpath, NULL));
             break;
         }
 
@@ -109,6 +110,48 @@ char* type_to_string (Type* type)
     }
 
     return out;
+}
+
+Type* type_parse (char* str)
+{
+    size_t len = strlen (str);
+    pvm_assert (str != NULL && len > 1, "Invalid type string");
+
+    Type* base_type;
+    if (str[0] == '#')
+    {
+        base_type = type_new_primitive (str[1]);
+    }
+    else if (str[0] == '&')
+    {
+        StringBuilder* value = str_builder_create ();
+        uint32_t i;
+        for (i = 1; i < len; i++)
+        {
+            if (str[i] == ']')
+            {
+                break;
+            }
+
+            str_builder_add_str (value, char_to_string (str[i]), 0);
+        }
+
+        pvm_assert (str[i - 1] != '/', "Unexpected end of type path");
+        base_type = type_new_reference (decode_utf8str (str, NULL));
+    }
+    else
+    {
+        pvm_panicf ("Invalid type character %c", str[0]);
+    }
+
+    char* ch = strchr (str, ']');
+    if (ch == NULL)
+    {
+        return base_type;
+    }
+
+    uint32_t firstbracket = ch - str;
+    return type_new_array (base_type, len - firstbracket);
 }
 
 void type_free (Type* type)

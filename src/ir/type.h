@@ -34,6 +34,7 @@ PrimitiveValueKind get_primitive_type_for_char (char c);
 Type* type_new_primitive (char c);
 Type* type_new_reference (pstring refpath);
 Type* type_new_array (Type* element_type, uint32_t depth);
+Type* type_parse (char* str);
 char* type_to_string (Type* type);
 void type_free (Type* type);
 
