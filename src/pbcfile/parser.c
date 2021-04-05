@@ -97,20 +97,13 @@ static Pool* build_pool (Parser* parser)
         uint32_t len = read_u32 (parser);
         int8_t type  = read_i8 (parser);
         pvm_assert (len != 0, "Invalid constant pool entry length 0");
-        char* errmsg;
-        asprintf (&errmsg, "Invalid constant pool entry type type 0x%02X",
-                  type);
-        pvm_assert (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF32 ||
-                        type == PVM_PARSER_POOL_ENTRY_TYPE_LONG,
-                    errmsg);
-        free (errmsg);
 
         if (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF32)
         {
             char* res = read_n_utf32_chars (parser, len);
-            e         = pool_entry_new_utf32 (res, len);
+            e         = pool_entry_new_str (res, len);
         }
-        else
+        else if (type == PVM_PARSER_POOL_ENTRY_TYPE_LONG)
         {
             char* len_err_msg;
             asprintf (&len_err_msg,
@@ -120,6 +113,16 @@ static Pool* build_pool (Parser* parser)
             free (len_err_msg);
             int64_t data = read_i64 (parser);
             e            = pool_entry_new_long (data);
+        }
+        else if (type == PVM_PARSER_POOL_ENTRY_TYPE_UTF8)
+        {
+            char* res = read_n_bytes (parser, len);
+            e         = pool_entry_new_str (res, len);
+        }
+        else
+        {
+            pvm_panicf ("Invalid constant pool entry type %d", type);
+            e = NULL;
         }
 
         pool_add_entry (pool, e);

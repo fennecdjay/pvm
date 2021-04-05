@@ -6,6 +6,7 @@
 #define PVM_PARSER_POOL_START            0xCB
 #define PVM_PARSER_POOL_ENTRY_TYPE_UTF32 0x21
 #define PVM_PARSER_POOL_ENTRY_TYPE_LONG  0x22
+#define PVM_PARSER_POOL_ENTRY_TYPE_UTF8  0x23
 
 #include "ir/code.h"
 #include "scanner.h"
