@@ -148,6 +148,14 @@ Type* type_parse (char* str)
     }
 
     uint32_t firstbracket = ch - str;
+    for (uint32_t i = firstbracket; i < len; i++)
+    {
+        if (str[i] != ']')
+        {
+            pvm_panicf ("Expected ] in array type");
+        }
+    }
+
     return type_new_array (base_type, len - firstbracket);
 }
 

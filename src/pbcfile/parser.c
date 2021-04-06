@@ -258,11 +258,7 @@ static Instruction** read_function_body (Parser* parser, uint32_t code_len)
     uint32_t count       = 0;
     for (uint32_t i = 0; i < code_len; i++)
     {
-        Instruction* i = read_instruction (parser);
-        if (i != NULL)
-        {
-            result[count++] = i;
-        }
+        result[count++] = read_instruction (parser);
     }
 
     return realloc (result, sizeof (Instruction*) * count);
@@ -273,21 +269,18 @@ static Instruction* read_instruction (Parser* parser)
     uint8_t opcode = read_u8 (parser);
     switch (opcode)
     {
-        // Does nothing.
-        case OP_NOOP:
-        {
-            return NULL;
-        }
-
+        case OP_NOOP: return NULL;
         case OP_IADD:
         case OP_ICONST_1:
         case OP_ICONST_0:
         case OP_DUP:
         case OP_SWAP:
+        case OP_ROT:
         {
             return instruction_new (opcode, NULL, 0);
         }
 
+        case OP_ROTN:
         case OP_IPUSH:
         {
             int32_t* args = checked_malloc (sizeof (int32_t));

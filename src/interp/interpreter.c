@@ -54,14 +54,15 @@ void interp_run_function (Interpreter* interp, Function* func)
     printf (
         "Interpreter: Exited stack frame at %p for function %s, depth: %d\n",
         interp->current_frame, name, depth - 1);
-    call_stack_pop (interp->cs);
+    StackFrame* previous_frame = call_stack_pop (interp->cs);
+    stack_frame_free (previous_frame);
     stack_free (locals_stack);
 }
 
 static void interpreter_execute_instruction (Interpreter* interp,
                                              Instruction* instr, Stack* stack)
 {
-    if (instr->op == OP_NOOP)
+    if (instr == NULL)
     {
         return;
     }
@@ -110,6 +111,36 @@ static void interpreter_execute_instruction (Interpreter* interp,
             int32_t val1 = stack_pop (stack)->value.i32;
             int32_t val2 = stack_pop (stack)->value.i32;
             stack_push (stack, primitive_value_new_i32 (val1 + val2));
+            break;
+        }
+
+        case OP_ROT:
+        {
+            PrimitiveValue* v1 = stack_pop (stack);
+            PrimitiveValue* v2 = stack_pop (stack);
+            PrimitiveValue* v3 = stack_pop (stack);
+            prim_copied (v1);
+            prim_copied (v2);
+            prim_copied (v3);
+            stack_push (stack, v1);
+            stack_push (stack, v2);
+            stack_push (stack, v3);
+            break;
+        }
+
+        case OP_ROTN:
+        {
+            PrimitiveValue* values[instr->args[0]];
+            for (uint8_t n = 0; n < instr->args[0]; n++)
+            {
+                values[n] = stack_pop (stack);
+            }
+
+            for (uint8_t n = 0; n < instr->args[0]; n++)
+            {
+                stack_push (stack, values[n]);
+            }
+
             break;
         }
     }

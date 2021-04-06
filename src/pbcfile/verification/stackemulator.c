@@ -129,13 +129,13 @@ static StackEmulatorItemType stack_pop (StackEmulator* stack,
 
 static bool instruction_emulate_stack (Instruction* i, StackEmulator* se)
 {
+    if (i == NULL)
+    {
+        return false;
+    }
+
     switch (i->op)
     {
-        case OP_NOOP:
-        {
-            return false;
-        }
-
         case OP_DUP:
         {
             StackEmulatorItemType t = stack_peek_any (se, i);
@@ -165,6 +165,29 @@ static bool instruction_emulate_stack (Instruction* i, StackEmulator* se)
             stack_pop (se, i, STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_INT32);
             stack_pop (se, i, STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_INT32);
             stack_push (se, STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_INT32);
+            return true;
+        }
+
+        case OP_ROTN:
+        {
+            printf ("args: %d\n", i->args[0]);
+            if (i->args[0] < 2)
+            {
+                pvm_panicf ("Cannot rotn less than 2 items");
+            }
+
+            StackEmulatorItemType* types =
+                checked_malloc (sizeof (StackEmulatorItemType) * (i)->args[0]);
+            for (uint8_t n = 0; n < i->args[0]; n++)
+            {
+                types[n] = stack_pop_any (se, i);
+            }
+
+            for (uint8_t n = 0; n < i->args[0]; n++)
+            {
+                stack_push (se, types[n]);
+            }
+
             return true;
         }
     }

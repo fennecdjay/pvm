@@ -13,11 +13,13 @@ typedef enum
     OP_IADD     = 0x04,
     OP_DUP      = 0x05,
     OP_SWAP     = 0x06,
+    OP_ROT      = 0x07,
+    OP_ROTN     = 0x08,
 } OpCode;
 
 const char* op_code_to_string (OpCode code);
 const char* get_op_name (OpCode code);
-int8_t opcode_pops (OpCode code);
-int8_t opcode_pushes (OpCode code);
+int8_t opcode_pops (OpCode code, int32_t* args);
+int8_t opcode_pushes (OpCode code, int32_t* args);
 
 #endif /* __PVM_OPCODE_H */

@@ -26,24 +26,25 @@ const char* get_op_name (OpCode code)
     return 0;
 }
 
-int8_t opcode_pops (OpCode code)
+int8_t opcode_pops (OpCode code, int32_t* args)
 {
     switch (code)
     {
         case OP_IPUSH:
         case OP_ICONST_0:
         case OP_ICONST_1:
-        case OP_SWAP:
         case OP_DUP:
         case OP_NOOP: return 0;
-
+        case OP_ROT: return 3;
+        case OP_ROTN: return args[0];
+        case OP_SWAP:
         case OP_IADD: return 2;
     }
 
     return -1;
 }
 
-int8_t opcode_pushes (OpCode code)
+int8_t opcode_pushes (OpCode code, int32_t* args)
 {
     switch (code)
     {
@@ -52,8 +53,9 @@ int8_t opcode_pushes (OpCode code)
         case OP_IADD:
         case OP_DUP:
         case OP_ICONST_1: return 1;
-
-        case OP_SWAP:
+        case OP_ROTN: return args[0];
+        case OP_ROT:
+        case OP_SWAP: return 2;
         case OP_NOOP: return 0;
     }
 
