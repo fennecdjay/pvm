@@ -275,6 +275,10 @@ static Instruction* read_instruction (Parser* parser)
         case OP_ICONST_0:
         case OP_DUP:
         case OP_SWAP:
+        case OP_IDIV:
+        case OP_IMUL:
+        case OP_IDREM:
+        case OP_ISUB:
         case OP_ROT:
         {
             return instruction_new (opcode, NULL, 0);

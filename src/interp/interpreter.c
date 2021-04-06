@@ -17,6 +17,7 @@ static void interpreter_execute_instruction (Interpreter* interp,
                                              Instruction* instr, Stack* stack);
 static void print_stack (Stack* stack);
 static char* primitive_value_to_string (PrimitiveValue* val);
+static void i32_arithmetic (Stack* stack, OpCode op);
 
 struct _Interpreter
 {
@@ -107,10 +108,12 @@ static void interpreter_execute_instruction (Interpreter* interp,
         }
 
         case OP_IADD:
+        case OP_IDIV:
+        case OP_IMUL:
+        case OP_IDREM:
+        case OP_ISUB:
         {
-            int32_t val1 = stack_pop (stack)->value.i32;
-            int32_t val2 = stack_pop (stack)->value.i32;
-            stack_push (stack, primitive_value_new_i32 (val1 + val2));
+            i32_arithmetic (stack, instr->op);
             break;
         }
 
@@ -146,6 +149,23 @@ static void interpreter_execute_instruction (Interpreter* interp,
     }
 
     print_stack (stack);
+}
+
+static void i32_arithmetic (Stack* stack, OpCode op)
+{
+    int32_t v1 = stack_pop (stack)->value.i32;
+    int32_t v2 = stack_pop (stack)->value.i32;
+    int32_t result;
+    switch (op)
+    {
+        case OP_IDIV: result = v1 / v2; break;
+        case OP_IMUL: result = v1 * v2; break;
+        case OP_IDREM: result = v1 % v2; break;
+        case OP_IADD: result = v1 + v2; break;
+        case OP_ISUB: result = v1 - v2; break;
+    }
+
+    stack_push (stack, primitive_value_new_i32 (result));
 }
 
 static char* primitive_value_to_string (PrimitiveValue* val)

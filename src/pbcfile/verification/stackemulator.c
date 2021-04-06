@@ -110,14 +110,18 @@ static StackEmulatorItemType stack_pop (StackEmulator* stack,
     {
         printf ("%d\n", type);
         printf ("%d:%s\n", oldtop,
-                stack_emulator_item_type_to_string (type, stack));
+                stack_emulator_item_type_to_string (oldtop, stack));
         stack_emulator_error (
             "Instruction %s cannot be applied to type %s",
             op_code_to_string (executor->op),
             stack_emulator_item_type_to_string (oldtop, stack));
     }
 
-    stack->stack[stack->stack_size - 1] = 0;
+    if (stack->stack_size > 2)
+    {
+        stack->stack[stack->stack_size - 1] =
+            stack->stack[stack->stack_size - 2];
+    }
     stack->stack_size--;
     if (stack->stack_size > 1)
     {
@@ -161,6 +165,10 @@ static bool instruction_emulate_stack (Instruction* i, StackEmulator* se)
         }
 
         case OP_IADD:
+        case OP_IDIV:
+        case OP_IMUL:
+        case OP_IDREM:
+        case OP_ISUB:
         {
             stack_pop (se, i, STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_INT32);
             stack_pop (se, i, STACK_EMULATOR_ITEM_TYPE_PRIMITIVE_INT32);
