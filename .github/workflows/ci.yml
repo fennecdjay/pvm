@@ -1,0 +1,43 @@
+name: CI
+
+on: push
+
+jobs:
+  CI:
+    name: CI
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    # if the message contains [skip ci], do not build
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+    # checkout the repo
+    - uses: actions/checkout@v2
+
+
+    # install meson and ninja
+    - name: Install build system (linux)
+      if: ${{ matrix.os  == 'ubuntu-latest' }}
+      run: sudo apt-ge install meson ninja-build
+
+    - name: Install build system (macos)
+      if: ${{ matrix.os  == 'macos-latest' }}
+      run: homebrew install meson ninja
+
+    - name: Install build system (Windows)
+      if: ${{ matrix.os  == 'windows-latest' }}
+      run: choco install meson ninja
+
+
+    # build the project
+    - name: Build
+      run: meson build && ninja -C build 
+
+    # here we should run the tests
+    - name: Tests
+      run: ./build/src/pvm
