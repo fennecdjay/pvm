@@ -39,9 +39,7 @@ jobs:
       run: |
         git clone https://git.savannah.gnu.org/git/libjit.git
         cd libjit
-        ./configure
-        make
-        sudo make install
+        ./bootstrap
 
     # build the project
     - name: Build
