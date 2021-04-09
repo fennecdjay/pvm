@@ -40,6 +40,7 @@ jobs:
         git clone https://git.savannah.gnu.org/git/libjit.git
         cd libjit
         ./bootstrap
+        sudo make install
 
     # build the project
     - name: Build
