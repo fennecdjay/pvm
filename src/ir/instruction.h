@@ -16,6 +16,8 @@ struct _Instruction
 
 Instruction* instruction_new (OpCode op, int32_t* args, uint8_t args_len);
 const char* instruction_disassemble (Instruction* instruction);
+int8_t instruction_pops (Instruction* instr);
+int8_t instruction_pushes (Instruction* instr);
 void instruction_free (Instruction* instruction);
 
 #endif /* __PVM_INSTRUCTION_H__ */

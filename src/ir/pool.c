@@ -57,6 +57,14 @@ PoolEntry* pool_entry_new_long (uint64_t l)
     return entry;
 }
 
+PoolEntry* pool_entry_new_func_ref (uint32_t idx)
+{
+    PoolEntry* entry  = pool_entry_new (PVM_POOL_ENTRY_TYPE_FUNC_REF);
+    entry->value.fref = idx;
+    entry->len        = 4;
+    return entry;
+}
+
 PoolEntry* pool_entry_new_str (char* str, uint32_t len)
 {
     PoolEntry* entry = pool_entry_new (PVM_POOL_ENTRY_TYPE_UTF32);
@@ -86,6 +94,12 @@ char* pool_entry_to_string (PoolEntry* entry)
         case PVM_POOL_ENTRY_TYPE_LONG:
         {
             asprintf (&end, "value=%lX]", entry->value.l);
+            break;
+        }
+
+        case PVM_POOL_ENTRY_TYPE_FUNC_REF:
+        {
+            asprintf (&end, "value=%x]", entry->value.fref);
             break;
         }
     }

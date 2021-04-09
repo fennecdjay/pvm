@@ -1,6 +1,5 @@
 // interpreter.c: opcode execution
 // license information in LICENSE
-#define prim_copied(value) value->copy = true;
 #include "interpreter.h"
 #include "callstack.h"
 #include "stackframe.h"
@@ -24,14 +23,16 @@ struct _Interpreter
     StackFrame* current_frame;
     CallStack* cs;
     Pool* datapool;
+    Code* code;
 };
 
-Interpreter* interp_new (Pool* pool)
+Interpreter* interp_new (Code* code)
 {
     Interpreter* i   = checked_malloc (sizeof (Interpreter));
     i->cs            = call_stack_new ();
     i->current_frame = NULL;
-    i->datapool      = pool;
+    i->code          = code;
+    i->datapool      = code->pool;
     return i;
 }
 
@@ -91,7 +92,6 @@ static void interpreter_execute_instruction (Interpreter* interp,
         case OP_DUP:
         {
             PrimitiveValue* value = stack_peek (stack);
-            prim_copied (value);
             stack_push (stack, value);
             break;
         }
@@ -100,10 +100,18 @@ static void interpreter_execute_instruction (Interpreter* interp,
         {
             PrimitiveValue* v1 = stack_pop (stack);
             PrimitiveValue* v2 = stack_pop (stack);
-            prim_copied (v1);
-            prim_copied (v2);
             stack_push (stack, v1);
             stack_push (stack, v2);
+            break;
+        }
+
+        case OP_CALLSIMPLE:
+        {
+            Function* func =
+                interp->code->functions
+                    [interp->datapool->entries[instr->args[0]]->value.fref];
+
+            interp_run_function (interp, func);
             break;
         }
 
@@ -122,9 +130,6 @@ static void interpreter_execute_instruction (Interpreter* interp,
             PrimitiveValue* v1 = stack_pop (stack);
             PrimitiveValue* v2 = stack_pop (stack);
             PrimitiveValue* v3 = stack_pop (stack);
-            prim_copied (v1);
-            prim_copied (v2);
-            prim_copied (v3);
             stack_push (stack, v1);
             stack_push (stack, v2);
             stack_push (stack, v3);

@@ -3,10 +3,11 @@
 #ifndef __PVM_PARSER_H__
 #define __PVM_PARSER_H__
 
-#define PVM_PARSER_POOL_START            0xCB
-#define PVM_PARSER_POOL_ENTRY_TYPE_UTF32 0x21
-#define PVM_PARSER_POOL_ENTRY_TYPE_LONG  0x22
-#define PVM_PARSER_POOL_ENTRY_TYPE_UTF8  0x23
+#define PVM_PARSER_POOL_START               0xCB
+#define PVM_PARSER_POOL_ENTRY_TYPE_UTF32    0x21
+#define PVM_PARSER_POOL_ENTRY_TYPE_LONG     0x22
+#define PVM_PARSER_POOL_ENTRY_TYPE_UTF8     0x23
+#define PVM_PARSER_POOL_ENTRY_TYPE_FUNC_REF 0x24
 
 #include "ir/code.h"
 #include "scanner.h"

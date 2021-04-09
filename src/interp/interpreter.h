@@ -3,11 +3,11 @@
 #ifndef __PVM_INTERP_H__
 #define __PVM_INTERP_H__
 #include "ir/function.h"
-#include "ir/pool.h"
+#include "ir/code.h"
 
 typedef struct _Interpreter Interpreter;
 
-Interpreter* interp_new (Pool* datapool);
+Interpreter* interp_new (Code* code);
 void interp_run_function (Interpreter* interp, Function* func);
 void interp_free (Interpreter* interp);
 

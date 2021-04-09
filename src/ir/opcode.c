@@ -3,6 +3,17 @@
 #include "opcode.h"
 #include "utils/utils.h"
 
+static const char* opcode_names[] = {
+    [OP_NOOP] = "noop",         [OP_DUP] = "dup",
+    [OP_SWAP] = "swap",         [OP_ROT] = "rot",
+    [OP_ROTN] = "rotn",         [OP_IPUSH] = "ipush",
+    [OP_ICONST_1] = "iconst_1", [OP_ICONST_0] = "iconst_0",
+    [OP_IADD] = "iadd",         [OP_IDIV] = "idiv",
+    [OP_IMUL] = "imul",         [OP_IDREM] = "idrem",
+    [OP_ISUB] = "isub",         [OP_CALLSIMPLE] = "callsimple",
+
+};
+
 const char* op_code_to_string (OpCode code)
 {
     char* result;
@@ -12,52 +23,5 @@ const char* op_code_to_string (OpCode code)
 
 const char* get_op_name (OpCode code)
 {
-    switch (code)
-    {
-        case OP_NOOP: return "noop";
-        case OP_IPUSH: return "ipush";
-        case OP_ICONST_1: return "iconst_1";
-        case OP_ICONST_0: return "iconst_0";
-        case OP_IADD: return "iadd";
-        case OP_DUP: return "dup";
-        case OP_SWAP: return "swap";
-    }
-
-    return 0;
-}
-
-int8_t opcode_pops (OpCode code, int32_t* args)
-{
-    switch (code)
-    {
-        case OP_IPUSH:
-        case OP_ICONST_0:
-        case OP_ICONST_1:
-        case OP_DUP:
-        case OP_NOOP: return 0;
-        case OP_ROT: return 3;
-        case OP_ROTN: return args[0];
-        case OP_SWAP:
-        case OP_IADD: return 2;
-    }
-
-    return -1;
-}
-
-int8_t opcode_pushes (OpCode code, int32_t* args)
-{
-    switch (code)
-    {
-        case OP_IPUSH:
-        case OP_ICONST_0:
-        case OP_IADD:
-        case OP_DUP:
-        case OP_ICONST_1: return 1;
-        case OP_ROTN: return args[0];
-        case OP_ROT:
-        case OP_SWAP: return 2;
-        case OP_NOOP: return 0;
-    }
-
-    return -1;
+    return opcode_names[code];
 }
