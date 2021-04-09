@@ -34,6 +34,15 @@ jobs:
       run: choco install meson ninja
 
 
+    # install libjit
+    - name: Install libjit
+      run: |
+        git clone https://git.savannah.gnu.org/git/libjit.git
+        cd libjit
+        ./configure
+        make
+        sudo make install
+
     # build the project
     - name: Build
       run: meson build && ninja -C build 
