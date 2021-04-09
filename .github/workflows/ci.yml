@@ -34,9 +34,9 @@ jobs:
       run: choco install meson ninja
 
 
-    - name: Install autotools (macos)
+    - name: Install autoconf (macos)
       if: ${{ matrix.os  == 'macos-latest' }}
-      run: brew install autotools
+      run: brew install autoconf
 
     # install libjit
     - name: Install libjit
