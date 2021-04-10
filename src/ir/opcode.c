@@ -3,7 +3,7 @@
 #include "opcode.h"
 #include "utils/utils.h"
 
-static const char* opcode_names[] = {
+static char* opcode_names[] = {
     [OP_NOOP] = "noop",         [OP_DUP] = "dup",
     [OP_SWAP] = "swap",         [OP_ROT] = "rot",
     [OP_ROTN] = "rotn",         [OP_IPUSH] = "ipush",
@@ -14,14 +14,14 @@ static const char* opcode_names[] = {
 
 };
 
-const char* op_code_to_string (OpCode code)
+char* op_code_to_string (OpCode code)
 {
     char* result;
     asprintf (&result, "%s: (0x%02x)", get_op_name (code), code);
     return result;
 }
 
-const char* get_op_name (OpCode code)
+char* get_op_name (OpCode code)
 {
     return opcode_names[code];
 }

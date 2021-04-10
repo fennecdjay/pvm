@@ -56,8 +56,7 @@ void interp_run_function (Interpreter* interp, Function* func)
     printf (
         "Interpreter: Exited stack frame at %p for function %s, depth: %d\n",
         interp->current_frame, name, depth - 1);
-    StackFrame* previous_frame = call_stack_pop (interp->cs);
-    stack_frame_free (previous_frame);
+    stack_frame_free (call_stack_pop (interp->cs));
     stack_free (locals_stack);
 }
 
@@ -68,6 +67,21 @@ static void interpreter_execute_instruction (Interpreter* interp,
     {
         return;
     }
+
+    char* line;
+    if (instr->loc == NULL)
+    {
+        line = "<unknown line>";
+    }
+    else
+    {
+        asprintf (&line, "%d", instr->loc->line);
+    }
+
+    char* instr_str = instruction_disassemble (instr);
+    printf ("Interpreter: running instruction %s (%s:%s)\n", instr_str,
+            interp->code->header->sourcename, line);
+    free (instr_str);
 
     switch (instr->op)
     {
@@ -256,7 +270,7 @@ static char* primitive_value_to_string (PrimitiveValue* val)
 
 static void print_stack (Stack* stack)
 {
-    printf ("[");
+    printf ("Interpreter: stack: [");
     char* str;
     for (uint32_t i = 0; i < stack->stack_size - 1; i++)
     {
@@ -275,6 +289,5 @@ void interp_free (Interpreter* interp)
 {
     return_if_null (interp);
     call_stack_free (interp->cs);
-    stack_frame_free (interp->current_frame);
     free (interp);
 }

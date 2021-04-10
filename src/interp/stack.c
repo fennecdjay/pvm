@@ -10,7 +10,7 @@ Stack* stack_new ()
     Stack* s          = checked_malloc (sizeof (Stack));
     s->stack_capacity = 10;
     s->stack_size     = 0;
-    s->values         = checked_malloc (sizeof (PrimitiveValue) * 10);
+    s->values         = checked_calloc (10, sizeof (PrimitiveValue));
     s->top            = checked_malloc (sizeof (PrimitiveValue));
     return s;
 }
@@ -125,12 +125,12 @@ void stack_rotate_n (Stack* stack, uint32_t n)
 void stack_free (Stack* stack)
 {
     return_if_null (stack);
-    for (uint32_t i = 0; i < stack->stack_size; i++)
+    for (uint32_t i = 0;
+         i < ((stack->stack_capacity < 10) ? 10 : stack->stack_capacity); i++)
     {
-        primitive_value_free (stack_pop (stack));
+        primitive_value_free (stack->values[i]);
     }
 
-    primitive_value_free (stack->top);
     free (stack->values);
     free (stack);
 }

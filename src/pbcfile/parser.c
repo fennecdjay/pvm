@@ -30,9 +30,10 @@ static char* read_n_utf32_chars (Parser* parser, uint32_t n);
 static Function** read_functions (Parser* parser, Pool* pool, uint32_t count);
 static Function* read_function (Parser* parser, Pool* pool);
 static Instruction* read_instruction (Parser* parser);
-static Instruction** read_function_body (Parser* parser, uint32_t code_len);
-static SourceLocTable* read_source_loc_table (Parser* parser,
-                                              Function* function);
+static Instruction** read_function_body (Parser* parser, uint32_t code_len,
+                                         SourceLocTable* sltable,
+                                         uint32_t sltable_len);
+static SourceLocTable* read_source_loc_table (Parser* parser, uint32_t len);
 
 static void check_header (Header* header);
 static void check_version (uint8_t patch, uint8_t min, uint8_t maj);
@@ -247,10 +248,15 @@ static Function* read_function (Parser* parser, Pool* pool)
     asprintf (&out, fmt, name);
     pvm_assert (pool_has_entry (pool, name), out);
 
-    uint32_t code_len  = read_u32 (parser);
-    Instruction** body = read_function_body (parser, code_len);
+    uint32_t sltable_len    = read_u32 (parser);
+    SourceLocTable* sltable = read_source_loc_table (parser, sltable_len);
 
-    Function* f       = function_new (body, code_len, name, sig, 0, NULL);
+    uint32_t code_len = read_u32 (parser);
+    Instruction** body =
+        read_function_body (parser, code_len, sltable, sltable_len);
+
+    Function* f =
+        function_new (body, code_len, name, sig, sltable_len, sltable);
     StackEmulator* se = stack_emulator_new (body, code_len);
     stack_emulator_emulate (se);
     stack_emulator_free (se);
@@ -258,13 +264,28 @@ static Function* read_function (Parser* parser, Pool* pool)
     return f;
 }
 
-static Instruction** read_function_body (Parser* parser, uint32_t code_len)
+static SourceLocTable* read_source_loc_table (Parser* parser, uint32_t len)
+{
+    SourceLocTable* table = source_loc_table_new ();
+    for (uint32_t i = 0; i < len; i++)
+    {
+        source_loc_table_add (table, read_u32 (parser), read_u32 (parser));
+    }
+
+    return table;
+}
+
+static Instruction** read_function_body (Parser* parser, uint32_t code_len,
+                                         SourceLocTable* sltable,
+                                         uint32_t sltable_len)
 {
     Instruction** result = calloc (code_len, sizeof (Instruction*));
     uint32_t count       = 0;
     for (uint32_t i = 0; i < code_len; i++)
     {
-        result[count++] = read_instruction (parser);
+        Instruction* instr = read_instruction (parser);
+        instr->loc = i <= sltable_len ? NULL : sltable->entries[i];
+        result[count++] = instr;
     }
 
     return realloc (result, sizeof (Instruction*) * count);
@@ -294,8 +315,8 @@ static Instruction* read_instruction (Parser* parser)
         {
             uint32_t idx     = read_u32 (parser);
             uint8_t args_len = read_u8 (parser);
-            int32_t* args    = checked_malloc (sizeof (int32_t) * (args_len + 1));
-            args[0]          = idx;
+            int32_t* args = checked_malloc (sizeof (int32_t) * (args_len + 1));
+            args[0]       = idx;
 
             if (args_len != 0)
             {

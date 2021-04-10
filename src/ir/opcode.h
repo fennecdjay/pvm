@@ -24,7 +24,7 @@ typedef enum
     OP_CALLSIMPLE = 0x20,
 } OpCode;
 
-const char* op_code_to_string (OpCode code);
-const char* get_op_name (OpCode code);
+char* op_code_to_string (OpCode code);
+char* get_op_name (OpCode code);
 
 #endif /* __PVM_OPCODE_H */

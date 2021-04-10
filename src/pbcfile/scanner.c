@@ -12,7 +12,8 @@ static void scanner_assert_remaining (Scanner* scanner, uint8_t remaining)
 {
     if ((scanner->length - scanner->index) < remaining)
     {
-        pvm_panicf ("Ran out of bytes: %d expected, got %d", remaining,
+        pvm_panicf ("Ran out of bytes at offset 0x%X: %d expected, got %d",
+                    scanner->index, remaining,
                     scanner->length - scanner->index);
     }
 }

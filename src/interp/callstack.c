@@ -18,7 +18,7 @@ CallStack* call_stack_new ()
 {
     CallStack* stack = checked_malloc (sizeof (CallStack));
     stack->capacity  = 10;
-    stack->frames    = checked_malloc (sizeof (StackFrame) * 10);
+    stack->frames    = checked_calloc (10, sizeof (StackFrame));
     stack->size      = 0;
     stack->top       = NULL;
     return stack;
@@ -27,7 +27,7 @@ CallStack* call_stack_new ()
 StackFrame* call_stack_pop (CallStack* stack)
 {
     pvm_assert (stack->size != 0, "Cannot pop from empty stack!");
-    StackFrame* item             = stack->top;
+    StackFrame* item = stack->top;
     stack->size--;
     if (stack->size > 1)
     {
@@ -57,12 +57,11 @@ uint32_t call_stack_get_size (CallStack* stack)
 void call_stack_free (CallStack* stack)
 {
     return_if_null (stack);
-    for (uint32_t i = 0; i < stack->size; i++)
+    for (uint32_t i = 0; i < ((stack->size < 10) ? 10 : stack->size); i++)
     {
-        stack_frame_free (call_stack_pop (stack));
+        stack_frame_free (stack->frames[i]);
     }
 
-    stack_frame_free (stack->top);
     free (stack->frames);
     free (stack);
 }

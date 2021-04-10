@@ -12,15 +12,18 @@ Instruction* instruction_new (OpCode op, int32_t* args, uint8_t args_len)
     i->args        = args;
     i->op          = op;
     i->args_len    = args_len;
+    i->loc         = NULL;
     return i;
 }
 
-const char* instruction_disassemble (Instruction* instruction)
+char* instruction_disassemble (Instruction* instruction)
 {
     char* result;
+    char* opstr = op_code_to_string (instruction->op);
     asprintf (&result, "    %s (%d arguments)",
-              op_code_to_string (instruction->op), instruction->args_len);
+              opstr, instruction->args_len);
 
+    free (opstr);
     return result;
 }
 
@@ -41,7 +44,7 @@ int8_t instruction_pops (Instruction* instr)
         case OP_IADD:
         case OP_ROT: return 2;
         case OP_ROTN: return instr->args[0];
-        case OP_CALLSIMPLE: return instr->args_len;
+        case OP_CALLSIMPLE: return instr->args_len - 1;
     }
 
     return -1;
