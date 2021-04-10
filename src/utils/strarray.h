@@ -10,6 +10,13 @@
 
 typedef struct _StringArray StringArray;
 
+struct _StringArray
+{
+    char** data;
+    uint32_t length;
+    uint32_t capacity;
+};
+
 StringArray* str_array_new ();
 uint32_t str_array_len (StringArray* arr);
 char* str_array_get (StringArray* arr, uint32_t index);

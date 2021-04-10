@@ -18,10 +18,56 @@ Instruction* instruction_new (OpCode op, int32_t* args, uint8_t args_len)
 const char* instruction_disassemble (Instruction* instruction)
 {
     char* result;
-    asprintf (&result, "    %s (%d argumens)",
+    asprintf (&result, "    %s (%d arguments)",
               op_code_to_string (instruction->op), instruction->args_len);
 
     return result;
+}
+
+int8_t instruction_pops (Instruction* instr)
+{
+    switch (instr->op)
+    {
+        case OP_IPUSH:
+        case OP_ICONST_0:
+        case OP_ICONST_1:
+        case OP_IDIV:
+        case OP_IMUL:
+        case OP_IDREM:
+        case OP_ISUB:
+        case OP_NOOP: return 0;
+        case OP_DUP: return 1;
+        case OP_SWAP:
+        case OP_IADD:
+        case OP_ROT: return 2;
+        case OP_ROTN: return instr->args[0];
+        case OP_CALLSIMPLE: return instr->args_len;
+    }
+
+    return -1;
+}
+
+int8_t instruction_pushes (Instruction* instr)
+{
+    switch (instr->op)
+    {
+        case OP_IPUSH:
+        case OP_ICONST_0:
+        case OP_ICONST_1:
+        case OP_IDIV:
+        case OP_IMUL:
+        case OP_IDREM:
+        case OP_DUP:
+        case OP_IADD:
+        case OP_CALLSIMPLE:
+        case OP_ISUB: return 1;
+        case OP_NOOP: return 0;
+        case OP_SWAP:
+        case OP_ROT: return 2;
+        case OP_ROTN: return instr->args[0];
+    }
+
+    return -1;
 }
 
 void instruction_free (Instruction* instruction)

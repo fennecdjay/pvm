@@ -7,13 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct _StringArray
-{
-    char** data;
-    uint32_t length;
-    uint32_t capacity;
-};
-
 StringArray* str_array_new ()
 {
     StringArray* arr = checked_malloc (sizeof (StringArray));

@@ -100,6 +100,6 @@ static PrimitiveValue* new_internal (PrimitiveValueKind kind)
 {
     PrimitiveValue* value = checked_malloc (sizeof (PrimitiveValue));
     value->_kind          = kind;
-    value->copy           = false;
+    value->ref_count      = 1;
     return value;
 }

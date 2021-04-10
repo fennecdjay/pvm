@@ -20,11 +20,11 @@ typedef enum
     OP_IMUL     = 0x15,
     OP_IDREM    = 0x16,
     OP_ISUB     = 0x17,
+
+    OP_CALLSIMPLE = 0x20,
 } OpCode;
 
 const char* op_code_to_string (OpCode code);
 const char* get_op_name (OpCode code);
-int8_t opcode_pops (OpCode code, int32_t* args);
-int8_t opcode_pushes (OpCode code, int32_t* args);
 
 #endif /* __PVM_OPCODE_H */

@@ -15,6 +15,7 @@ typedef enum
 {
     PVM_POOL_ENTRY_TYPE_UTF32,
     PVM_POOL_ENTRY_TYPE_LONG,
+    PVM_POOL_ENTRY_TYPE_FUNC_REF,
 } EntryType;
 
 struct _Pool
@@ -37,11 +38,13 @@ struct _PoolEntry
     {
         char* str;
         uint64_t l;
+        uint32_t fref;
     } value;
 };
 
 PoolEntry* pool_entry_new_long (uint64_t l);
 PoolEntry* pool_entry_new_str (char* str, uint32_t len);
+PoolEntry* pool_entry_new_func_ref (uint32_t idx);
 char* pool_entry_to_string (PoolEntry* entry);
 void pool_entry_free (PoolEntry* entry);
 

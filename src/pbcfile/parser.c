@@ -119,6 +119,10 @@ static Pool* build_pool (Parser* parser)
             char* res = read_n_bytes (parser, len);
             e         = pool_entry_new_str (res, len);
         }
+        else if (type == PVM_PARSER_POOL_ENTRY_TYPE_FUNC_REF)
+        {
+            e = pool_entry_new_func_ref (read_u32 (parser));
+        }
         else
         {
             pvm_panicf ("Invalid constant pool entry type %d", type);
@@ -184,7 +188,9 @@ static char* read_n_utf32_chars (Parser* parser, uint32_t n)
     char* buffer = calloc (4, sizeof (char) * n + 1);
     for (uint32_t i = 0; i < n / 4; i++)
     {
-        strcat (buffer, read_utf32_char (parser));
+        char* txt = read_utf32_char (parser);
+        strcat (buffer, txt);
+        free (txt);
     }
 
     return buffer;
@@ -282,6 +288,24 @@ static Instruction* read_instruction (Parser* parser)
         case OP_ROT:
         {
             return instruction_new (opcode, NULL, 0);
+        }
+
+        case OP_CALLSIMPLE:
+        {
+            uint32_t idx     = read_u32 (parser);
+            uint8_t args_len = read_u8 (parser);
+            int32_t* args    = checked_malloc (sizeof (int32_t) * (args_len + 1));
+            args[0]          = idx;
+
+            if (args_len != 0)
+            {
+                for (int i = 1; i < args_len; i++)
+                {
+                    args[i] = read_i32 (parser);
+                }
+            }
+
+            return instruction_new (opcode, args, args_len + 1);
         }
 
         case OP_ROTN:

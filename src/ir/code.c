@@ -54,5 +54,7 @@ char* header_to_string (Header* header)
 
 void header_free (Header* header)
 {
+    free (header->sourcename);
+    free (header->vendor);
     free (header);
 }

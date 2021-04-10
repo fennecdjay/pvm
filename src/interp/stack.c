@@ -3,6 +3,7 @@
 #include "stack.h"
 #include "utils/utils.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 Stack* stack_new ()
 {
@@ -126,12 +127,10 @@ void stack_free (Stack* stack)
     return_if_null (stack);
     for (uint32_t i = 0; i < stack->stack_size; i++)
     {
-        if (!stack->values[i]->copy)
-        {
-            primitive_value_free (stack->values[i]);
-        }
+        primitive_value_free (stack_pop (stack));
     }
 
+    primitive_value_free (stack->top);
     free (stack->values);
     free (stack);
 }

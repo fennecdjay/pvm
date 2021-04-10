@@ -26,7 +26,7 @@ typedef enum
 struct _PrimitiveValue
 {
     PrimitiveValueKind _kind;
-    bool copy;
+    uint32_t ref_count;
     union
     {
         int8_t i8;
