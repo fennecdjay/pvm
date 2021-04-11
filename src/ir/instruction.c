@@ -20,8 +20,7 @@ char* instruction_disassemble (Instruction* instruction)
 {
     char* result;
     char* opstr = op_code_to_string (instruction->op);
-    asprintf (&result, "    %s (%d arguments)",
-              opstr, instruction->args_len);
+    asprintf (&result, "    %s (%d arguments)", opstr, instruction->args_len);
 
     free (opstr);
     return result;

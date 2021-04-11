@@ -284,8 +284,8 @@ static Instruction** read_function_body (Parser* parser, uint32_t code_len,
     for (uint32_t i = 0; i < code_len; i++)
     {
         Instruction* instr = read_instruction (parser);
-        instr->loc = i <= sltable_len ? NULL : sltable->entries[i];
-        result[count++] = instr;
+        instr->loc         = i <= sltable_len ? NULL : sltable->entries[i];
+        result[count++]    = instr;
     }
 
     return realloc (result, sizeof (Instruction*) * count);
