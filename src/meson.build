@@ -4,7 +4,6 @@ subdirs = [
     'pbcfile',
     'utils',
     'interp',
-    'pilc',
 ]
 
 foreach subdir: subdirs
@@ -144,19 +143,6 @@ libpvm = shared_library(
     install: true,
 )
 
-pilc_sources = []
-foreach src: libpilc_sources + libpilc_headers
-    pilc_sources += meson.source_root() / 'src' / 'pilc' / src
-endforeach
-
-libpilc = shared_library(
-    'pilc',
-    sources: pilc_sources,
-    c_args: global_cc_args,
-    include_directories: include_dirs,
-    install: true,
-)
-
 install_headers(
     libpvm_inst_headers,
     subdir: formatted_version + '/pvm',
@@ -168,7 +154,6 @@ executable(
     c_args: global_cc_args,
     link_with: [
         libpvm,
-        libpilc,
     ],
 
     dependencies: libpvm_deps,
