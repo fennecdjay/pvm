@@ -15,11 +15,10 @@ struct _Function
     uint32_t instructions_len;
     uint32_t name_ref;
     uint32_t sig_ref;
-    uint8_t arity;
 };
 
 Function* function_new (Instruction** instructions, uint32_t instructions_len,
-                        uint32_t name_ref, uint32_t sig_ref, uint32_t arity,
+                        uint32_t name_ref, uint32_t sig_ref,
                         SourceLocTable* sltable);
 void function_disassemble (Function* func, FILE* out);
 void function_free (Function* function);

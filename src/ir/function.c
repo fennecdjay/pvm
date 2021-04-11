@@ -8,11 +8,10 @@
 #include "utils/utils.h"
 
 Function* function_new (Instruction** instructions, uint32_t instructions_len,
-                        uint32_t name_ref, uint32_t sig_ref, uint32_t arity,
+                        uint32_t name_ref, uint32_t sig_ref,
                         SourceLocTable* sltable)
 {
     Function* func         = checked_malloc (sizeof (Function));
-    func->arity            = arity;
     func->instructions     = instructions;
     func->instructions_len = instructions_len;
     func->name_ref         = name_ref;

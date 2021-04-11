@@ -248,15 +248,12 @@ static Function* read_function (Parser* parser, Pool* pool)
     asprintf (&out, fmt, name);
     pvm_assert (pool_has_entry (pool, name), out);
 
-    uint32_t sltable_len    = read_u32 (parser);
-    SourceLocTable* sltable = read_source_loc_table (parser, sltable_len);
-
     uint32_t code_len = read_u32 (parser);
     Instruction** body =
-        read_function_body (parser, code_len, sltable, sltable_len);
+        read_function_body (parser, code_len, NULL, 0);
 
     Function* f =
-        function_new (body, code_len, name, sig, sltable_len, sltable);
+        function_new (body, code_len, name, sig, NULL);
     StackEmulator* se = stack_emulator_new (body, code_len);
     stack_emulator_emulate (se);
     stack_emulator_free (se);
@@ -284,7 +281,6 @@ static Instruction** read_function_body (Parser* parser, uint32_t code_len,
     for (uint32_t i = 0; i < code_len; i++)
     {
         Instruction* instr = read_instruction (parser);
-        instr->loc         = i <= sltable_len ? NULL : sltable->entries[i];
         result[count++]    = instr;
     }
 
