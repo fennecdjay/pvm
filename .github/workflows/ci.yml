@@ -36,7 +36,7 @@ jobs:
 
     - name: Install autoconf (macos)
       if: ${{ matrix.os  == 'macos-latest' }}
-      run: brew install autoconf
+      run: brew install autoconf automake libtool
 
     # install libjit
     - name: Install libjit
