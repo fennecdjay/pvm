@@ -1,0 +1,57 @@
+name: CI
+
+on: push
+
+jobs:
+  CI:
+    name: CI
+    strategy:
+      fail-fast: false
+      matrix:
+#        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    # if the message contains [skip ci], do not build
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+    # checkout the repo
+    - uses: actions/checkout@v2
+
+
+    # install meson and ninja
+    - name: Install build system (linux)
+      if: ${{ matrix.os  == 'ubuntu-latest' }}
+      run: sudo apt-get install meson ninja-build
+
+#    - name: Install build system (macos)
+#      if: ${{ matrix.os  == 'macos-latest' }}
+#      run: brew install meson ninja icu4c
+
+#    - name: Install build system (Windows)
+#      if: ${{ matrix.os  == 'windows-latest' }}
+#      run: choco install meson ninja
+
+#    - name: Install autoconf (macos)
+#      if: ${{ matrix.os  == 'macos-latest' }}
+#      run: brew install autoconf automake libtool
+
+    # install libjit
+    - name: Install libjit
+      run: |
+        git clone https://git.savannah.gnu.org/git/libjit.git
+        cd libjit
+        ./bootstrap
+        ./configure
+        make
+        sudo make install
+
+    # build the project
+    - name: Build
+      run: meson build && ninja -C build 
+
+    # here we should run the tests
+    - name: Tests
+      run: ./build/src/pvm
